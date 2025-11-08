@@ -33,6 +33,11 @@ public class EcoembesService {
 		return plantRespository.get(plant_id);
 	}
 	
+	//Get dumpster by id
+	public Dumpster getDumpsterById(String dumpster_id) {
+		return dumpsterRepository.get(dumpster_id);
+	}
+	
 	//Add new dumpster
 	public void addDumpster(Dumpster dumpster) {
 		dumpsterRepository.put(dumpster.getDumpster_id(), dumpster);
@@ -41,5 +46,10 @@ public class EcoembesService {
 	//Add new recycling plant
 	public void addRecyclingPlant(RecyclingPlant plant) {
 		plantRespository.put(String.valueOf(plant.getPlant_id()), plant);
+	}
+	
+	//Assign dumpster to plant
+	public void assignDumpsterToPlant(Dumpster dumpster, RecyclingPlant plant) {
+		plant.getDumpsters().add(dumpster);
 	}
 }

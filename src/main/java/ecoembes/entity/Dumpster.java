@@ -6,8 +6,8 @@ public class Dumpster {
 	private String dumpster_id;
 	private String location;
 	private int postal_code;
-	private int capacity;
-	private float fill_level; //in Tons
+	private int capacity;//in tons
+	private float fill_level; //in tons
 	private int container_number;
 	
 	public Dumpster() {

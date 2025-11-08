@@ -6,28 +6,29 @@ import java.util.Objects;
 
 
 public class RecyclingPlant {
-	private Long plant_id;
+	private int plant_id;
 	private String plant_name;
 	private float total_capacity;
+	private float current_capacity;
 	private List<Dumpster> dumpsters = new ArrayList<>();
 
 	
 	public RecyclingPlant() {
 	}
 	
-	public RecyclingPlant(Long plant_id, String plant_name, float total_capacity, List<Dumpster> dumpsters) {
+	public RecyclingPlant(int plant_id, String plant_name, float total_capacity) {
 		super();
 		this.plant_id = plant_id;
 		this.plant_name = plant_name;
 		this.total_capacity = total_capacity;
-		this.dumpsters = dumpsters;
+		this.current_capacity = 0;
 	}
 
-	public Long getPlant_id() {
+	public int getPlant_id() {
 		return plant_id;
 	}
 
-	public void setPlant_id(Long plant_id) {
+	public void setPlant_id(int plant_id) {
 		this.plant_id = plant_id;
 	}
 
@@ -54,10 +55,18 @@ public class RecyclingPlant {
 	public void setDumpsters(List<Dumpster> dumpsters) {
 		this.dumpsters = dumpsters;
 	}
+	
+	public float getCurrent_capacity() {
+		return current_capacity;
+	}
+	
+	public void setCurrent_capacity(float current_capacity) {
+		this.current_capacity = current_capacity;
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(plant_id, plant_name, total_capacity, dumpsters);
+		return Objects.hash(current_capacity, dumpsters, plant_id, plant_name, total_capacity);
 	}
 
 	@Override
@@ -69,9 +78,10 @@ public class RecyclingPlant {
 		if (getClass() != obj.getClass())
 			return false;
 		RecyclingPlant other = (RecyclingPlant) obj;
-		return Objects.equals(plant_id, other.plant_id) && Objects.equals(plant_name, other.plant_name)
-				&& Float.floatToIntBits(total_capacity) == Float.floatToIntBits(other.total_capacity) && Objects.equals(dumpsters, other.dumpsters);
-	}	
-	
+		return Float.floatToIntBits(current_capacity) == Float.floatToIntBits(other.current_capacity)
+				&& Objects.equals(dumpsters, other.dumpsters) && Objects.equals(plant_id, other.plant_id)
+				&& Objects.equals(plant_name, other.plant_name)
+				&& Float.floatToIntBits(total_capacity) == Float.floatToIntBits(other.total_capacity);
+	}
 	
 }

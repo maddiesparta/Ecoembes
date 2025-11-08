@@ -1,5 +1,62 @@
 package ecoembes.facade;
 
-public class AuthController {
+import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import ecoembes.dto.CredentialsDTO;
+import ecoembes.service.AuthService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+	private AuthService authService;
+	public AuthController(AuthService authService) {
+		this.authService = authService;
+	}
+	
+	//No me deja añadir lo de operations (tbd)
+	
+	@PostMapping("/login")
+    public ResponseEntity<String> login(
+    		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User's credentials", required = true)
+    		@RequestBody CredentialsDTO credentials) {    	
+        Optional<String> token = authService.login(credentials.getEmail(), credentials.getPassword());
+        
+    	if (token.isPresent()) {
+    		return new ResponseEntity<>(token.get(), HttpStatus.OK);
+    	} else {
+    		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    	}
+    }
+
+    // Logout endpoint
+    @Operation(
+        summary = "Logout from the system",
+        description = "Allows a user to logout by providing the authorization token.",
+        responses = {
+            @ApiResponse(responseCode = "204", description = "No Content: Logout successful"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid token, logout failed"),
+        }
+    )    
+    @PostMapping("/logout")    
+    public ResponseEntity<Void> logout(
+    		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Authorization token in plain text", required = true)
+    		@RequestBody String token) {    	
+        Optional<Boolean> result = authService.logout(token);
+    	
+        if (result.isPresent() && result.get()) {
+        	return new ResponseEntity<>(HttpStatus.NO_CONTENT);	
+        } else {
+        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }        
+    }
 }

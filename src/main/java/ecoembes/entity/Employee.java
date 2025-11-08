@@ -19,6 +19,10 @@ public class Employee {
 		this.password = password;
 	}
 
+	public boolean checkPassword(String password) {
+		return this.password.equals(password);
+	}
+	
 	public int getEmployee_id() {
 		return employee_id;
 	}

@@ -6,27 +6,32 @@ public class Dumpster {
 	private String dumpster_id;
 	private String location;
 	private int postal_code;
-	private int capacity;//in tons
-	private float fill_level; //in tons
-	private int container_number;
+	private int capacity; //estimated total number of containers it can hold
+	private float estimated_weight;//tons
+	private FillLevel fill_level; //GREEN, ORANGE, RED
+	private int container_number; //number of containers in the dumpster
 	
 	public Dumpster() {
 	}
-	
-	public Dumpster(String dumpster_id, String location, int postal_code, int capacity, float fill_level,
-			int container_number) {
-		
+
+	public Dumpster(String dumpster_id, String location, int postal_code, int capacity, float estimated_weight,
+			 int container_number) {
+		super();
 		this.dumpster_id = dumpster_id;
 		this.location = location;
 		this.postal_code = postal_code;
 		this.capacity = capacity;
-		this.fill_level = fill_level;
+		this.estimated_weight = estimated_weight;
+		if(container_number < capacity / 3) {
+			this.fill_level = FillLevel.GREEN;
+		} else if(container_number < (2 * capacity) /3) {
+			this.fill_level = FillLevel.ORANGE;
+		} else {
+			this.fill_level = FillLevel.RED;
+		}
 		this.container_number = container_number;
 	}
-	
-	public void UpdateFillLevel(float new_fill_level) {
-		this.fill_level = new_fill_level;
-	}
+
 	public String getDumpster_id() {
 		return dumpster_id;
 	}
@@ -59,11 +64,19 @@ public class Dumpster {
 		this.capacity = capacity;
 	}
 
-	public float getFill_level() {
+	public float getEstimated_weight() {
+		return estimated_weight;
+	}
+
+	public void setEstimated_weight(float estimated_weight) {
+		this.estimated_weight = estimated_weight;
+	}
+
+	public FillLevel getFill_level() {
 		return fill_level;
 	}
 
-	public void setFill_level(float fill_level) {
+	public void setFill_level(FillLevel fill_level) {
 		this.fill_level = fill_level;
 	}
 
@@ -77,7 +90,8 @@ public class Dumpster {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(capacity, container_number, dumpster_id, fill_level, location, postal_code);
+		return Objects.hash(capacity, container_number, dumpster_id, estimated_weight, fill_level, location,
+				postal_code);
 	}
 
 	@Override
@@ -89,10 +103,10 @@ public class Dumpster {
 		if (getClass() != obj.getClass())
 			return false;
 		Dumpster other = (Dumpster) obj;
-		return dumpster_id == other.dumpster_id;
+		return capacity == other.capacity && container_number == other.container_number
+				&& Objects.equals(dumpster_id, other.dumpster_id)
+				&& Float.floatToIntBits(estimated_weight) == Float.floatToIntBits(other.estimated_weight)
+				&& fill_level == other.fill_level && Objects.equals(location, other.location)
+				&& postal_code == other.postal_code;
 	}
-	
-	
-	
-	
 }

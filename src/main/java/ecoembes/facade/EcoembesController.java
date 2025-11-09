@@ -36,7 +36,15 @@ public class EcoembesController {
 	}
 	
 	//GET all dumpsters
-	//aqui iria operation 
+	@Operation(
+		summary = "Get all dumpsters",
+		description = "Retrieves a list of all dumpsters in the system.",
+		responses = {
+				@ApiResponse(responseCode = "200", description = "OK: Successfully retrieved the list of dumpsters"),
+				@ApiResponse(responseCode = "204", description = "No Content: No dumpsters found"),
+				@ApiResponse(responseCode = "500", description = "Internal Server error")
+		}
+	)
 	
 	@GetMapping("/dumpsters")
 	public ResponseEntity<List<DumpsterDTO>> getAllDumpsters() {
@@ -47,7 +55,7 @@ public class EcoembesController {
 			}
 			List<DumpsterDTO> dumpsterDTOs = dumpsters.stream()
 					.map(dumpster -> new DumpsterDTO(dumpster.getDumpster_id(), dumpster.getLocation(), dumpster.getPostal_code(),
-							dumpster.getCapacity(), dumpster.getFill_level(), dumpster.getContainer_number()))
+							dumpster.getFill_level(), dumpster.getContainer_number()))
 					.collect(Collectors.toList());
 			return new ResponseEntity<>(dumpsterDTOs, HttpStatus.OK);
 		} catch (Exception e) {
@@ -56,7 +64,15 @@ public class EcoembesController {
 	}
 	
 	//GET dumpsters state by postal code
-	//Operation tbd
+	@Operation(
+		summary = "Get dumpsters state by postal code",
+		description = "Returns snapshot of dumpster activity in a specific area",
+		responses = {
+				@ApiResponse(responseCode = "200", description = "OK: Successfully retrieved the list of dumpsters"),
+				@ApiResponse(responseCode = "204", description = "No Content: No dumpsters found in the specified postal code"),
+				@ApiResponse(responseCode = "500", description = "Internal Server error")
+		}
+	)
 	@GetMapping("/dumpsters/{postal_code}/state")
 	public ResponseEntity<List<DumpsterDTO>> getDumpstersByPostalCode(
 			@Parameter(name = "dumpster_id", description = "Name of the dumpster", required = true, example = "d1")
@@ -70,7 +86,7 @@ public class EcoembesController {
 			}
 			List<DumpsterDTO> dumpsterDTOs = dumpsters.stream()
 					.map(dumpster -> new DumpsterDTO(dumpster.getDumpster_id(), dumpster.getLocation(), dumpster.getPostal_code(),
-							dumpster.getCapacity(), dumpster.getFill_level(), dumpster.getContainer_number()))
+							dumpster.getFill_level(), dumpster.getContainer_number()))
 					.collect(Collectors.toList());
 			return new ResponseEntity<>(dumpsterDTOs, HttpStatus.OK);
 		} catch (Exception e) {
@@ -79,6 +95,16 @@ public class EcoembesController {
 	}
 	
 	//POST to assign(allocate) a dumpster to a recycling plant
+	@Operation(
+		summary = "Assign a dumpster to a recycling plant",
+		description = "Assigns a specific dumpster to a recycling plant based on their IDs and capacity.",
+		responses = {
+				@ApiResponse(responseCode = "200", description = "OK: Successfully assigned the dumpster to the recycling plant"),
+				@ApiResponse(responseCode = "400", description = "Bad Request: Capacity exceeded"),
+				@ApiResponse(responseCode = "404", description = "Not Found: Dumpster or recycling plant not found"),
+				@ApiResponse(responseCode = "500", description = "Internal Server error")
+		}
+	)
 	@PostMapping("/dumpsters/{dumpster_id}/assign/{plant_id}")
 	public ResponseEntity<Void> assignDumpsterToPlant(
 			@ValidatedParameter
@@ -96,6 +122,9 @@ public class EcoembesController {
 			if (plant == null) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
+			if(plant.getTotal_capacity() < plant.getCurrent_capacity() + dumpster.getCapacity()) {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			ecoembesService.assignDumpsterToPlant(dumpster, plant);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
@@ -109,9 +138,8 @@ public class EcoembesController {
 				dumpster.getDumpster_id(),
 				dumpster.getLocation(),
 				dumpster.getPostal_code(),
-				dumpster.getCapacity(),
 				dumpster.getFill_level(),
-				dumpster.getContainer_number()
+				dumpster.getContainer_number()	
 		);
 	}
 	

@@ -51,5 +51,6 @@ public class EcoembesService {
 	//Assign dumpster to plant
 	public void assignDumpsterToPlant(Dumpster dumpster, RecyclingPlant plant) {
 		plant.getDumpsters().add(dumpster);
+		plant.setCurrent_capacity(plant.getCurrent_capacity() + dumpster.getEstimated_weight());
 	}
 }

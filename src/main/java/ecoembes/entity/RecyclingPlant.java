@@ -6,7 +6,7 @@ import java.util.Objects;
 
 
 public class RecyclingPlant {
-	private int plant_id;
+	private String plant_id;
 	private String plant_name;
 	private float total_capacity;
 	private float current_capacity;
@@ -16,7 +16,7 @@ public class RecyclingPlant {
 	public RecyclingPlant() {
 	}
 	
-	public RecyclingPlant(int plant_id, String plant_name, float total_capacity) {
+	public RecyclingPlant(String plant_id, String plant_name, float total_capacity) {
 		super();
 		this.plant_id = plant_id;
 		this.plant_name = plant_name;
@@ -24,11 +24,11 @@ public class RecyclingPlant {
 		this.current_capacity = 0;
 	}
 
-	public int getPlant_id() {
+	public String getPlant_id() {
 		return plant_id;
 	}
 
-	public void setPlant_id(int plant_id) {
+	public void setPlant_id(String plant_id) {
 		this.plant_id = plant_id;
 	}
 

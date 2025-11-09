@@ -122,7 +122,6 @@ public class EcoembesController {
 			if(plant.getTotal_capacity() < plant.getCurrent_capacity() + dumpster.getCapacity()) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			ecoembesService.assignDumpsterToPlant(dumpster, plant);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

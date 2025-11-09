@@ -8,7 +8,7 @@ public class Allocation {
 	private Long plant_id;
 	private Long employee_id;
 	private int dumpster_id;
-
+	
 	public Allocation() {
 	}
 

@@ -51,8 +51,8 @@ public class DataInitializer {
 			logger.info("Dumpsters saved!");
 			
 			//Create recycling plants
-			RecyclingPlant rp1 = new RecyclingPlant("p1", "PlasSB Ltd", 1000);
-			RecyclingPlant rp2 = new RecyclingPlant("p2", "Cont Socket Ltd", 1500);
+			RecyclingPlant rp1 = new RecyclingPlant("p1", "PlasSB Ltd", 100000);
+			RecyclingPlant rp2 = new RecyclingPlant("p2", "Cont Socket Ltd", 150000);
 			
 			ecoembesService.addRecyclingPlant(rp1);
 			ecoembesService.addRecyclingPlant(rp2);

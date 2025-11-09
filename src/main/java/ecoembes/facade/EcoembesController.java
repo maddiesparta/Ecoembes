@@ -71,6 +71,7 @@ public class EcoembesController {
 		responses = {
 				@ApiResponse(responseCode = "200", description = "OK: Successfully retrieved dumpsters summary"),
 				@ApiResponse(responseCode = "204", description = "No Content: No dumpsters found in the specified postal code"),
+				@ApiResponse(responseCode = "400", description = "Bad Request: Postal code is invalid"),
 				@ApiResponse(responseCode = "500", description = "Internal Server error")
 		}
 	)
@@ -79,6 +80,9 @@ public class EcoembesController {
 			@Parameter(name = "postal_code", description = "Postal code", required = true, example = "111111")
 			@PathVariable int postal_code){
 		try {
+			if(postal_code <= 0) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
 			List<Dumpster> dumpsters = ecoembesService.getDumpstersByPostalCode(postal_code);
 			if (dumpsters.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);

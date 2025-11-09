@@ -11,6 +11,7 @@ import ecoembes.dto.AreaSnapshotDTO;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.RecyclingPlant;
 
+
 @Service
 public class EcoembesService {
 	private static Map<String, Dumpster> dumpsterRepository = new HashMap<>();

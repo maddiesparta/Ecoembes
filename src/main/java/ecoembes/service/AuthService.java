@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
 import ecoembes.entity.Employee;
 
+@Service
 public class AuthService {
 	// Simulating a user repository
     private static Map<String, Employee> userRepository = new HashMap<>();

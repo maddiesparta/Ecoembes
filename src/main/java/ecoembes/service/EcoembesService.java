@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
 import ecoembes.dto.AreaSnapshotDTO;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.RecyclingPlant;
 
+@Service
 public class EcoembesService {
 	private static Map<String, Dumpster> dumpsterRepository = new HashMap<>();
 	private static Map<String, RecyclingPlant> plantRespository = new HashMap<>();

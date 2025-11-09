@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ecoembes.dto.AreaSnapshotDTO;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.RecyclingPlant;
 
@@ -52,5 +53,20 @@ public class EcoembesService {
 	public void assignDumpsterToPlant(Dumpster dumpster, RecyclingPlant plant) {
 		plant.getDumpsters().add(dumpster);
 		plant.setCurrent_capacity(plant.getCurrent_capacity() + dumpster.getEstimated_weight());
+	}
+	//Calculate summary
+	public AreaSnapshotDTO calculateAreaSnapshot(List<Dumpster> dumpsters,int postal_code) {
+		int total_dumpsters = dumpsters.size();
+		int green_count = 0;
+		int orange_count = 0;
+		int red_count = 0;
+		for(Dumpster d : dumpsters) {
+			switch(d.getFill_level()) {
+				case GREEN -> green_count++;
+				case ORANGE -> orange_count++;
+				case RED -> red_count++;
+			}
+		}
+		return new AreaSnapshotDTO(postal_code,total_dumpsters, green_count, orange_count, red_count);
 	}
 }

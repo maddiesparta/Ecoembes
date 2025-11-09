@@ -64,24 +64,7 @@ public class DumpsterDTO {
 		this.container_number = container_number;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(container_number, dumpster_id, fill_level, location, postal_code);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DumpsterDTO other = (DumpsterDTO) obj;
-		return container_number == other.container_number && Objects.equals(dumpster_id, other.dumpster_id)
-				&& fill_level == other.fill_level && Objects.equals(location, other.location)
-				&& postal_code == other.postal_code;
-	}
+	
 	
 	
 }

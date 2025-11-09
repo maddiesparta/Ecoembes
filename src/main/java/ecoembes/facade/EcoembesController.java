@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ecoembes.dto.AreaSnapshotDTO;
 import ecoembes.dto.DumpsterDTO;
 import ecoembes.dto.RecyclingPlantDTO;
 import ecoembes.entity.Dumpster;
@@ -66,29 +67,25 @@ public class EcoembesController {
 	//GET dumpsters state by postal code
 	@Operation(
 		summary = "Get dumpsters state by postal code",
-		description = "Returns snapshot of dumpster activity in a specific area",
+		description = "Returns summary of the snapshot of dumpster activity in a specific area",
 		responses = {
-				@ApiResponse(responseCode = "200", description = "OK: Successfully retrieved the list of dumpsters"),
+				@ApiResponse(responseCode = "200", description = "OK: Successfully retrieved dumpsters summary"),
 				@ApiResponse(responseCode = "204", description = "No Content: No dumpsters found in the specified postal code"),
 				@ApiResponse(responseCode = "500", description = "Internal Server error")
 		}
 	)
-	@GetMapping("/dumpsters/{postal_code}/state")
-	public ResponseEntity<List<DumpsterDTO>> getDumpstersByPostalCode(
-			@Parameter(name = "dumpster_id", description = "Name of the dumpster", required = true, example = "d1")
-			@PathVariable int dumpster_id,
+	@GetMapping("/dumpsters/{postal_code}/summary")
+	public ResponseEntity<AreaSnapshotDTO> getDumpstersByPostalCode(
 			@Parameter(name = "postal_code", description = "Postal code", required = true, example = "111111")
-			@RequestParam int postal_code) {
+			@PathVariable int postal_code){
 		try {
 			List<Dumpster> dumpsters = ecoembesService.getDumpstersByPostalCode(postal_code);
 			if (dumpsters.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
-			List<DumpsterDTO> dumpsterDTOs = dumpsters.stream()
-					.map(dumpster -> new DumpsterDTO(dumpster.getDumpster_id(), dumpster.getLocation(), dumpster.getPostal_code(),
-							dumpster.getFill_level(), dumpster.getContainer_number()))
-					.collect(Collectors.toList());
-			return new ResponseEntity<>(dumpsterDTOs, HttpStatus.OK);
+			//Summary statistics
+			AreaSnapshotDTO snapshot = ecoembesService.calculateAreaSnapshot(dumpsters, postal_code);
+			return new ResponseEntity<>(snapshot, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

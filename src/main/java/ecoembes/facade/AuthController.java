@@ -23,8 +23,14 @@ public class AuthController {
 		this.authService = authService;
 	}
 	
-	//No me deja añadir lo de operations (tbd)
-	
+	@Operation(
+		summary = "Login to the system",
+		description = "Allows a user to login by providing email and password, returning an authorization token upon successful authentication.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "OK: Login successful, token returned"),
+			@ApiResponse(responseCode = "401", description = "Unauthorized: Invalid credentials, login failed"),
+		}
+	)
 	@PostMapping("/login")
     public ResponseEntity<String> login(
     		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User's credentials", required = true)

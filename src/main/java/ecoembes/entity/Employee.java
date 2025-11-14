@@ -1,5 +1,6 @@
 package ecoembes.entity;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Employee {
@@ -7,6 +8,7 @@ public class Employee {
 	private String employee_name;
 	private String email;
 	private String password;
+	private List<Allocation> allocations;
 	
 	public Employee() {
 	}
@@ -54,10 +56,17 @@ public class Employee {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public List<Allocation> getAllocations() {
+		return allocations;
+	}
+	public void setAllocations(List<Allocation> allocations) {
+		this.allocations = allocations;
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(email, employee_id, employee_name, password);
+		return Objects.hash(allocations, email, employee_id, employee_name, password);
 	}
 
 	@Override
@@ -69,8 +78,10 @@ public class Employee {
 		if (getClass() != obj.getClass())
 			return false;
 		Employee other = (Employee) obj;
-		return Objects.equals(email, other.email) && employee_id == other.employee_id
-				&& Objects.equals(employee_name, other.employee_name) && Objects.equals(password, other.password);
+		return Objects.equals(allocations, other.allocations) && Objects.equals(email, other.email)
+				&& employee_id == other.employee_id && Objects.equals(employee_name, other.employee_name)
+				&& Objects.equals(password, other.password);
 	}
+	
 	
 }

@@ -34,12 +34,12 @@ public class DataInitializer {
 			logger.info("Employees saved!");
 			
 			//Create dumpsters
-			Dumpster d1 = new Dumpster("d0", "Calle Nagusia 12", 111111, 25, 10, 200);
-			Dumpster d2 = new Dumpster("d1", "Calle Iparragirre 5", 222222, 30, 15, 300);
-			Dumpster d3 = new Dumpster("d2", "Calle Gernika 8", 333333, 20, 5, 150);
-			Dumpster d4 = new Dumpster("d3", "Calle Bidebarrieta 3", 111111, 40, 20, 400);
-			Dumpster d5 = new Dumpster("d4", "Calle Elcano 7", 222222, 35, 18, 350);
-			Dumpster d6 = new Dumpster("d5", "Calle Lersundi 10", 111111, 28, 12, 250);
+			Dumpster d1 = new Dumpster("d0", "Calle Nagusia 12", "111111", 25, 10, 200);
+			Dumpster d2 = new Dumpster("d1", "Calle Iparragirre 5", "222222", 30, 15, 300);
+			Dumpster d3 = new Dumpster("d2", "Calle Gernika 8", "333333", 20, 5, 150);
+			Dumpster d4 = new Dumpster("d3", "Calle Bidebarrieta 3", "111111", 40, 20, 400);
+			Dumpster d5 = new Dumpster("d4", "Calle Elcano 7", "222222", 35, 18, 350);
+			Dumpster d6 = new Dumpster("d5", "Calle Lersundi 10", "111111", 28, 12, 250);
 			
 			ecoembesService.addDumpster(d1);
 			ecoembesService.addDumpster(d2);

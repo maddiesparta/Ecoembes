@@ -7,14 +7,14 @@ import ecoembes.entity.FillLevel;
 public class DumpsterDTO {
 	private String dumpster_id;
 	private String location;
-	private int postal_code;
+	private String postal_code;
 	private FillLevel fill_level; //GREEN, ORANGE, RED
 	private int container_number; //number of containers in the dumpster
 	
 	public DumpsterDTO() {
 	}
 
-	public DumpsterDTO(String dumpster_id, String location, int postal_code, FillLevel fill_level,
+	public DumpsterDTO(String dumpster_id, String location, String postal_code, FillLevel fill_level,
 			int container_number) {
 		super();
 		this.dumpster_id = dumpster_id;
@@ -40,11 +40,11 @@ public class DumpsterDTO {
 		this.location = location;
 	}
 
-	public int getPostal_code() {
+	public String getPostal_code() {
 		return postal_code;
 	}
 
-	public void setPostal_code(int postal_code) {
+	public void setPostal_code(String postal_code) {
 		this.postal_code = postal_code;
 	}
 

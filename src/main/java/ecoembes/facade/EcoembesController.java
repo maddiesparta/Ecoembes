@@ -1,5 +1,7 @@
 package ecoembes.facade;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ecoembes.dto.AreaSnapshotDTO;
+
 import ecoembes.dto.DumpsterDTO;
 import ecoembes.dto.RecyclingPlantDTO;
+import ecoembes.dto.UsageDTO;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.RecyclingPlant;
 import ecoembes.service.AuthService;
@@ -75,24 +78,37 @@ public class EcoembesController {
 				@ApiResponse(responseCode = "500", description = "Internal Server error")
 		}
 	)
-	@GetMapping("/dumpsters/{postal_code}/summary")
-	public ResponseEntity<AreaSnapshotDTO> getDumpstersByPostalCode(
-			@Parameter(name = "postal_code", description = "Postal code", required = true, example = "111111")
-			@PathVariable int postal_code){
-		try {
-			if(postal_code <= 0) {
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
-			List<Dumpster> dumpsters = ecoembesService.getDumpstersByPostalCode(postal_code);
-			if (dumpsters.isEmpty()) {
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			}
-			//Summary statistics
-			AreaSnapshotDTO snapshot = ecoembesService.calculateAreaSnapshot(dumpsters, postal_code);
-			return new ResponseEntity<>(snapshot, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	@GetMapping("/dumpsters/{postal_code}")
+	public ResponseEntity<List<DumpsterDTO>> getDumpstersByPostalCode(
+			@ValidatedParameter
+	        @Parameter(name = "postal_code", description = "Postal code", required = true, example = "111111")
+	        @PathVariable("postal_code") String postal_code){
+		
+	    try {
+	        if(postal_code == null || postal_code.trim().isEmpty()) {
+	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	        }
+
+	        List<Dumpster> allDumpsters = ecoembesService.getAllDumpsters();
+	        List<Dumpster> dumpsters = ecoembesService.getDumpstersByPostalCode(postal_code, allDumpsters);
+
+	        if (dumpsters.isEmpty()) {
+	            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	        }
+	        
+	        List<DumpsterDTO> dumpsterDTOs = new ArrayList<DumpsterDTO>();
+	        for (Dumpster d : dumpsters) {
+	            DumpsterDTO dum = dumpsterToDTO(d);
+	            dumpsterDTOs.add(dum);
+	        }
+
+	        return new ResponseEntity<>(dumpsterDTOs, HttpStatus.OK);
+	        
+	    } catch (Exception e) {
+	        System.out.println("ERROR: " + e.getMessage());
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
 	}
 	
 	//POST to assign(allocate) a dumpster to a recycling plant
@@ -125,7 +141,10 @@ public class EcoembesController {
 			}
 			if(plant.getTotal_capacity() < plant.getCurrent_capacity() + dumpster.getCapacity()) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}else {
+				ecoembesService.assignDumpsterToPlant(dumpster, plant);
 			}
+			
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -134,15 +153,17 @@ public class EcoembesController {
 	
 	//Converts Dumpster to DumpsterDTO
 	private DumpsterDTO dumpsterToDTO(Dumpster dumpster) {
-		return new DumpsterDTO(
-				dumpster.getDumpster_id(),
-				dumpster.getLocation(),
-				dumpster.getPostal_code(),
-				dumpster.getFill_level(),
-				dumpster.getContainer_number()	
-		);
+	       return new DumpsterDTO(
+	           dumpster.getDumpster_id(),
+	           dumpster.getLocation(),
+	           dumpster.getPostal_code(),
+	           dumpster.getFill_level(),
+	           dumpster.getContainer_number()
+	       );
+	  
+	    
 	}
-	
+
 	//Converts RecyclingPlant to RecyclingPlantDTO
 	private RecyclingPlantDTO plantToDTO(RecyclingPlant plant) {
 		return new RecyclingPlantDTO(

@@ -11,6 +11,7 @@ public class RecyclingPlant {
 	private float total_capacity;
 	private float current_capacity;
 	private List<Dumpster> dumpsters = new ArrayList<>();
+	private List<Allocation> allocations;
 
 	
 	public RecyclingPlant() {
@@ -63,10 +64,17 @@ public class RecyclingPlant {
 	public void setCurrent_capacity(float current_capacity) {
 		this.current_capacity = current_capacity;
 	}
+	
+	public List<Allocation> getAllocations() {
+		return allocations;
+	}
+	public void setAllocations(List<Allocation> allocations) {
+		this.allocations = allocations;
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(current_capacity, dumpsters, plant_id, plant_name, total_capacity);
+		return Objects.hash(allocations, current_capacity, dumpsters, plant_id, plant_name, total_capacity);
 	}
 
 	@Override
@@ -78,10 +86,12 @@ public class RecyclingPlant {
 		if (getClass() != obj.getClass())
 			return false;
 		RecyclingPlant other = (RecyclingPlant) obj;
-		return Float.floatToIntBits(current_capacity) == Float.floatToIntBits(other.current_capacity)
+		return Objects.equals(allocations, other.allocations)
+				&& Float.floatToIntBits(current_capacity) == Float.floatToIntBits(other.current_capacity)
 				&& Objects.equals(dumpsters, other.dumpsters) && Objects.equals(plant_id, other.plant_id)
 				&& Objects.equals(plant_name, other.plant_name)
 				&& Float.floatToIntBits(total_capacity) == Float.floatToIntBits(other.total_capacity);
 	}
+	
 	
 }

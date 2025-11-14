@@ -1,20 +1,23 @@
 package ecoembes.entity;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Dumpster {
 	private String dumpster_id;
 	private String location;
-	private int postal_code;
+	private String postal_code;
 	private int capacity; //estimated total number of containers it can hold
 	private float estimated_weight;//tons
 	private FillLevel fill_level; //GREEN, ORANGE, RED
 	private int container_number; //number of containers in the dumpster
+	private List<Usage> usage;
+	private List<Allocation> allocations;
 	
 	public Dumpster() {
 	}
 
-	public Dumpster(String dumpster_id, String location, int postal_code, int capacity, float estimated_weight,
+	public Dumpster(String dumpster_id, String location, String postal_code, int capacity, float estimated_weight,
 			 int container_number) {
 		super();
 		this.dumpster_id = dumpster_id;
@@ -48,11 +51,11 @@ public class Dumpster {
 		this.location = location;
 	}
 
-	public int getPostal_code() {
+	public String getPostal_code() {
 		return postal_code;
 	}
 
-	public void setPostal_code(int postal_code) {
+	public void setPostal_code(String postal_code) {
 		this.postal_code = postal_code;
 	}
 
@@ -87,11 +90,24 @@ public class Dumpster {
 	public void setContainer_number(int container_number) {
 		this.container_number = container_number;
 	}
+	public void setUsage(List<Usage> usage) {
+		this.usage = usage;
+	}
+	public List<Usage> getUsage() {
+		return usage;
+	}
+	
+	public List<Allocation> getAllocations() {
+		return allocations;
+	}
+	public void setAllocations(List<Allocation> allocations) {
+		this.allocations = allocations;
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(capacity, container_number, dumpster_id, estimated_weight, fill_level, location,
-				postal_code);
+		return Objects.hash(allocations, capacity, container_number, dumpster_id, estimated_weight, fill_level,
+				location, postal_code, usage);
 	}
 
 	@Override
@@ -103,10 +119,13 @@ public class Dumpster {
 		if (getClass() != obj.getClass())
 			return false;
 		Dumpster other = (Dumpster) obj;
-		return capacity == other.capacity && container_number == other.container_number
-				&& Objects.equals(dumpster_id, other.dumpster_id)
+		return Objects.equals(allocations, other.allocations) && capacity == other.capacity
+				&& container_number == other.container_number && Objects.equals(dumpster_id, other.dumpster_id)
 				&& Float.floatToIntBits(estimated_weight) == Float.floatToIntBits(other.estimated_weight)
 				&& fill_level == other.fill_level && Objects.equals(location, other.location)
-				&& postal_code == other.postal_code;
+				&& Objects.equals(postal_code, other.postal_code) && Objects.equals(usage, other.usage);
 	}
+	
+
+	
 }

@@ -1,5 +1,6 @@
 package ecoembes.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import ecoembes.dto.AreaSnapshotDTO;
+import ecoembes.entity.Allocation;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.RecyclingPlant;
 
@@ -23,10 +24,10 @@ public class EcoembesService {
 	}
 	
 	//Get dumpsters of specific area (by postal code)
-	public List<Dumpster> getDumpstersByPostalCode(int postal_code) {
+	public List<Dumpster> getDumpstersByPostalCode(String postal_code,List<Dumpster> dumpsters) {
 		List<Dumpster> result = new ArrayList<>();
-		for(Dumpster d : dumpsterRepository.values()) {
-			if(d.getPostal_code() == postal_code) {
+		for(Dumpster d : dumpsters) {
+			if(d.getPostal_code().equals(postal_code)) {
 				result.add(d);
 			}
 		}
@@ -55,22 +56,10 @@ public class EcoembesService {
 	
 	//Assign dumpster to plant
 	public void assignDumpsterToPlant(Dumpster dumpster, RecyclingPlant plant) {
+		
 		plant.getDumpsters().add(dumpster);
 		plant.setCurrent_capacity(plant.getCurrent_capacity() + dumpster.getEstimated_weight());
 	}
-	//Calculate summary
-	public AreaSnapshotDTO calculateAreaSnapshot(List<Dumpster> dumpsters,int postal_code) {
-		int total_dumpsters = dumpsters.size();
-		int green_count = 0;
-		int orange_count = 0;
-		int red_count = 0;
-		for(Dumpster d : dumpsters) {
-			switch(d.getFill_level()) {
-				case GREEN -> green_count++;
-				case ORANGE -> orange_count++;
-				case RED -> red_count++;
-			}
-		}
-		return new AreaSnapshotDTO(postal_code,total_dumpsters, green_count, orange_count, red_count);
-	}
+	
+	
 }

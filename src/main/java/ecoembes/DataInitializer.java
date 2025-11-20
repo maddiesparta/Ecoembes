@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import ecoembes.service.AuthService;
+import ecoembes.service.DumpsterService;
 import ecoembes.service.EcoembesService;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.Employee;
@@ -18,7 +19,7 @@ public class DataInitializer {
 	private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
 	@Bean
-	CommandLineRunner initData(EcoembesService ecoembesService, AuthService authService) {
+	CommandLineRunner initData(DumpsterService dumpsterService, EcoembesService ecoembesService, AuthService authService) {
 		return args -> {
 			//Create employees
 			Employee e0 = new Employee(0, "user", "user@gmail.com", "user");
@@ -41,12 +42,12 @@ public class DataInitializer {
 			Dumpster d5 = new Dumpster("d4", "Calle Elcano 7", "222222", 35, 18, 350);
 			Dumpster d6 = new Dumpster("d5", "Calle Lersundi 10", "111111", 28, 12, 250);
 			
-			ecoembesService.addDumpster(d1);
-			ecoembesService.addDumpster(d2);
-			ecoembesService.addDumpster(d3);
-			ecoembesService.addDumpster(d4);
-			ecoembesService.addDumpster(d5);
-			ecoembesService.addDumpster(d6);
+			dumpsterService.addDumpster(d1);
+			dumpsterService.addDumpster(d2);
+			dumpsterService.addDumpster(d3);
+			dumpsterService.addDumpster(d4);
+			dumpsterService.addDumpster(d5);
+			dumpsterService.addDumpster(d6);
 			
 			logger.info("Dumpsters saved!");
 			

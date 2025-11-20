@@ -22,10 +22,10 @@ public class DataInitializer {
 	CommandLineRunner initData(DumpsterService dumpsterService, EcoembesService ecoembesService, AuthService authService) {
 		return args -> {
 			//Create employees
-			Employee e0 = new Employee(0, "user", "user@gmail.com", "user");
-			Employee e1 = new Employee(1, "Mike", "mike@gmail.com", "M1k3P4ss!");
-			Employee e2 = new Employee(2, "Sara", "sara@sara.com", "S4r4P4ss!");
-			Employee e3 = new Employee(3, "John", "john@gmail.com", "J0hnP4ss!");
+			Employee e0 = new Employee("0", "user", "user@gmail.com", "user");
+			Employee e1 = new Employee("1", "Mike", "mike@gmail.com", "M1k3P4ss!");
+			Employee e2 = new Employee("2", "Sara", "sara@sara.com", "S4r4P4ss!");
+			Employee e3 = new Employee("3", "John", "john@gmail.com", "J0hnP4ss!");
 			
 			authService.addEmployee(e0);
 			authService.addEmployee(e1);

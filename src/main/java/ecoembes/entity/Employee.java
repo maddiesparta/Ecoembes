@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Employee {
-	private int employee_id;
+	private String employee_id;
 	private String employee_name;
 	private String email;
 	private String password;
@@ -13,7 +13,7 @@ public class Employee {
 	public Employee() {
 	}
 	
-	public Employee(int employee_id, String employee_name, String email, String password) {
+	public Employee(String employee_id, String employee_name, String email, String password) {
 		super();
 		this.employee_id = employee_id;
 		this.employee_name = employee_name;
@@ -25,11 +25,11 @@ public class Employee {
 		return this.password.equals(password);
 	}
 	
-	public int getEmployee_id() {
+	public String getEmployee_id() {
 		return employee_id;
 	}
 
-	public void setEmployee_id(int employee_id) {
+	public void setEmployee_id(String employee_id) {
 		this.employee_id = employee_id;
 	}
 

@@ -8,11 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ecoembes.dto.DumpsterDTO;
 import ecoembes.entity.Dumpster;
+import ecoembes.entity.Employee;
+import ecoembes.service.AuthService;
 import ecoembes.service.DumpsterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,8 +44,18 @@ public class DumpsterController {
 		)
 		
 		@GetMapping("/dumpsters")
-		public ResponseEntity<List<DumpsterDTO>> getAllDumpsters() {
+		public ResponseEntity<List<DumpsterDTO>> getAllDumpsters(
+				@RequestHeader("Authorization") String authHeader) {
+			
 			try {
+				if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+				String token = authHeader.substring(7); //Quitar el Bearer del token
+				Employee employee = AuthService.validateToken(token);
+				if(employee == null) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
 				List<Dumpster> dumpsters = dumpsterService.getAllDumpsters();
 				if (dumpsters.isEmpty()) {
 					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -72,9 +85,18 @@ public class DumpsterController {
 		public ResponseEntity<List<DumpsterDTO>> getDumpstersByPostalCode(
 				@ValidatedParameter
 		        @Parameter(name = "postal_code", description = "Postal code", required = true, example = "111111")
-		        @PathVariable("postal_code") String postal_code){
+		        @PathVariable("postal_code") String postal_code,
+		        @RequestHeader("Authorization") String authHeader){
 			
 		    try {
+		    	if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+		    	String token = authHeader.substring(7); //Quitar el Bearer del token
+				Employee employee = AuthService.validateToken(token);
+				if(employee == null) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
 		        if(postal_code == null || postal_code.trim().isEmpty()) {
 		            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		        }

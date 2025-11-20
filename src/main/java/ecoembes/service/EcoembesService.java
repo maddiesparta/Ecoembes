@@ -10,12 +10,14 @@ import org.springframework.stereotype.Service;
 
 import ecoembes.entity.Allocation;
 import ecoembes.entity.Dumpster;
+import ecoembes.entity.Employee;
 import ecoembes.entity.RecyclingPlant;
 
 
 @Service
 public class EcoembesService {
 	private static Map<String, RecyclingPlant> plantRespository = new HashMap<>();
+	private static Map<String, Allocation> allocationRepository = new HashMap<>();
 	
 	//Get recycling plant by id
 	public RecyclingPlant getRecyclingPlantById(String plant_id) {
@@ -28,10 +30,19 @@ public class EcoembesService {
 	}
 	
 	//Assign dumpster to plant
-	public void assignDumpsterToPlant(Dumpster dumpster, RecyclingPlant plant) {
+	public void createAllocation(Dumpster dumpster, RecyclingPlant plant,Employee employee) {
+		if(plant.getCurrent_capacity() + dumpster.getCapacity() > plant.getTotal_capacity()) {
+			throw new IllegalArgumentException("Cannot allocate dumpster: plant capacity exceeded.");
+		}else {
+			plant.setCurrent_capacity(plant.getCurrent_capacity() + dumpster.getCapacity());
+			Allocation allocation = new Allocation();
+			allocation.setDumpster(dumpster);
+			allocation.setPlant(plant);
+			allocation.setEmployee(employee);
+			allocationRepository.put(String.valueOf(allocation.getAllocation_id()), allocation);
+		}
 		
-		plant.getDumpsters().add(dumpster);
-		plant.setCurrent_capacity(plant.getCurrent_capacity() + dumpster.getEstimated_weight());
+		
 	}
 	
 	

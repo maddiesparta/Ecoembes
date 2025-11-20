@@ -62,4 +62,13 @@ public class AuthService {
     private static synchronized String generateToken() {
         return Long.toHexString(System.currentTimeMillis());
     }
+    public static Employee validateToken(String token) {
+		if (tokenStore.containsKey(token)) {
+			token = token.replace("Bearer ", "");
+			Employee employee = tokenStore.get(token);
+			return employee;
+		} else {
+			return null;
+		}
+	}
 }

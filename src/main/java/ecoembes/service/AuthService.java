@@ -16,7 +16,7 @@ public class AuthService {
     // Storage to keep the session of the users that are logged in
     private static Map<String, Employee> tokenStore = new HashMap<>(); 
 
-    // Login method that checks if the user exists in the database and validates the password
+    // Login method that checks if the user exists in the database and validates the password and assigns token
     public Optional<String> login(String email, String password) {
     	Employee user = userRepository.get(email);
         
@@ -62,4 +62,8 @@ public class AuthService {
     private static synchronized String generateToken() {
         return Long.toHexString(System.currentTimeMillis());
     }
+    
+    private boolean validateSession(String token) {
+		return tokenStore.containsKey(token);
+	}
 }

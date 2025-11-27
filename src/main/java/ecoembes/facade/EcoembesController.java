@@ -49,7 +49,7 @@ public class EcoembesController {
 			@PathVariable("dumpster_id") String dumpster_id,
 			@ValidatedParameter
 			@Parameter(name = "plant_id", description = "ID of the recycling plant", required = true, example = "p1")
-			@PathVariable("plant_id") String plant_id) {
+			@PathVariable("plant_id") String plant_id){
 		try {
 			Dumpster dumpster = DumpsterService.getDumpsterById(dumpster_id);
 			if (dumpster == null) {

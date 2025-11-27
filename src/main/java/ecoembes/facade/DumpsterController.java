@@ -8,10 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ecoembes.dto.DumpsterDTO;
+import ecoembes.dto.UsageDTO;
 import ecoembes.entity.Dumpster;
 import ecoembes.service.DumpsterService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -99,6 +101,79 @@ public class DumpsterController {
 		        e.printStackTrace();
 		        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		    }
+		}
+		
+		//PUT to update dumpster's fill level and container number
+		@Operation(
+			summary = "Update dumpster's fill level and container number",
+			description = "Updates the fill level and container number of a specific dumpster based on its ID.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "OK: Successfully updated the dumpster"),
+					@ApiResponse(responseCode = "404", description = "Not Found: Dumpster not found"),
+					@ApiResponse(responseCode = "500", description = "Internal Server error")
+			}
+		)
+		@PutMapping("/dumpsters/{dumpster_id}/update/{container_number}/{fill_level}")
+		public ResponseEntity<Void> updateDumpster(
+				@ValidatedParameter
+		        @Parameter(name = "dumpster_id", description = "ID of the dumpster", required = true, example = "d1")
+		        @PathVariable("dumpster_id") String dumpster_id,
+		        @ValidatedParameter
+		        @Parameter(name = "container_number", description = "Container number", required = true, example = "5")
+		        @PathVariable("container_number") int container_number,
+		        @ValidatedParameter
+		        @Parameter(name = "fill_level", description = "Fill level", required = true, example = "GREEN")
+		        @PathVariable("fill_level") String fill_level) {
+			try {
+				Dumpster dumpster = DumpsterService.getDumpsterById(dumpster_id);
+				if (dumpster == null) {
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				}
+				dumpsterService.updateDumpster(dumpster_id, container_number, ecoembes.entity.FillLevel.valueOf(fill_level));
+				return new ResponseEntity<>(HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		
+		//GET dumpster usage between two dates
+		@Operation(
+			summary = "Get dumpster usage between two dates",
+			description = "Retrieves the usage history of a specific dumpster within a given date range.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "OK: Successfully retrieved the dumpster usage"),
+					@ApiResponse(responseCode = "204", description = "No Content: No usage data found for the specified period"),
+					@ApiResponse(responseCode = "404", description = "Not Found: Dumpster not found"),
+					@ApiResponse(responseCode = "500", description = "Internal Server error")
+			}
+		)
+		@GetMapping("/dumpsters/{dumpster_id}/usage/{start_date}/{end_date}")
+		public ResponseEntity<List<UsageDTO>> getDumpsterUsage(
+				@ValidatedParameter
+		        @Parameter(name = "dumpster_id", description = "ID of the dumpster", required = true, example = "d1")
+		        @PathVariable("dumpster_id") String dumpster_id,
+		        @ValidatedParameter
+		        @Parameter(name = "start_date", description = "Start date in format YYYY-MM-DD", required = true, example = "2023-01-01")
+		        @PathVariable("start_date") String start_date,
+		        @ValidatedParameter
+		        @Parameter(name = "end_date", description = "End date in format YYYY-MM-DD", required = true, example = "2023-01-31")
+		        @PathVariable("end_date") String end_date) {
+			try {
+				Dumpster dumpster = dumpsterService.getDumpsterById(dumpster_id);
+				if (dumpster == null) {
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				}
+				java.sql.Date startDate = java.sql.Date.valueOf(start_date);
+				java.sql.Date endDate = java.sql.Date.valueOf(end_date);
+				List<UsageDTO> usageDTOs = dumpsterService.getDumpsterUsage(dumpster, startDate, endDate);
+				if (usageDTOs.isEmpty()) {
+					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+				}
+				return new ResponseEntity<>(usageDTOs, HttpStatus.OK);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
 		
 		//Converts Dumpster to DumpsterDTO

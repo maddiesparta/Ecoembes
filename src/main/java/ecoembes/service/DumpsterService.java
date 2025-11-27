@@ -1,17 +1,21 @@
 package ecoembes.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import ecoembes.dto.UsageDTO;
 import ecoembes.entity.Dumpster;
+import ecoembes.entity.FillLevel;
 
 @Service
 public class DumpsterService {
 	private static Map<String, Dumpster> dumpsterRepository = new HashMap<>();
+	private static Map<Dumpster, List<UsageDTO>> usageRepository = new HashMap<>();
 
 	//Get all dumpsters
 		public List<Dumpster> getAllDumpsters() {
@@ -37,5 +41,29 @@ public class DumpsterService {
 		//Add new dumpster
 		public void addDumpster(Dumpster dumpster) {
 			dumpsterRepository.put(dumpster.getDumpster_id(), dumpster);
+		}
+		
+		//Update dumpster
+		public void updateDumpster(String dumpster_id, int container_number, FillLevel fill_level) {
+			Dumpster dumpster = dumpsterRepository.get(dumpster_id);
+			if (dumpster != null) {
+				dumpster.setContainer_number(container_number);
+				dumpster.setFill_level(fill_level);
+			}
+		}
+		
+		//Get usage of a dumpster given a period of 2 dates
+		public List<UsageDTO> getDumpsterUsage(Dumpster dumpster, Date start_date, Date end_date) {
+			List<UsageDTO> result = new ArrayList<>();
+			List<UsageDTO> usages = usageRepository.get(dumpster);
+			if(usages == null) {
+				return result;
+			}
+			for(UsageDTO u : usages) {
+				if(u.getDate().compareTo(start_date) >= 0 && u.getDate().compareTo(end_date) <= 0) {
+					result.add(u);
+				}
+			}
+			return result;
 		}
 }

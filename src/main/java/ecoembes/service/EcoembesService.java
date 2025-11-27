@@ -26,6 +26,9 @@ public class EcoembesService {
 	
 	//Add new recycling plant
 	public void addRecyclingPlant(RecyclingPlant plant) {
+		if(plantRespository.get(String.valueOf(plant.getPlant_id())) != null) {
+			throw new IllegalArgumentException("Recycling plant with id " + plant.getPlant_id() + " already exists.");
+		}
 		plantRespository.put(String.valueOf(plant.getPlant_id()), plant);
 	}
 	
@@ -43,6 +46,10 @@ public class EcoembesService {
 		}
 		
 		
+	}
+	//Get all plants
+	public List<RecyclingPlant> getAllPlants() {
+		return plantRespository.values().stream().toList();
 	}
 	
 	

@@ -1,24 +1,25 @@
 package ecoembes.dto;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import ecoembes.entity.FillLevel;
 
 public class UsageDTO {
-	private Date date;
+	private LocalDate date;
 	private FillLevel fill_level;
 	
 	public UsageDTO() {
 	}
-	public UsageDTO(Date date, FillLevel fill_level) {
+	public UsageDTO(LocalDate date, FillLevel fill_level) {
 		super();
 		this.date = date;
 		this.fill_level = fill_level;
 	}
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 	public FillLevel getFill_level() {

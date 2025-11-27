@@ -1,14 +1,19 @@
 package ecoembes.facade;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import ecoembes.dto.DumpsterDTO;
 import ecoembes.dto.RecyclingPlantDTO;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.Employee;
@@ -45,19 +50,20 @@ public class EcoembesController {
 				@ApiResponse(responseCode = "500", description = "Internal Server error")
 		}
 	)
-	@PostMapping("/dumpsters/{dumpster_id}/assign/{plant_id}")
+	@PostMapping("/plants/{plant_id}/assign/{dumpster_id}")
 	public ResponseEntity<Void> assignDumpsterToPlant(
 			@ValidatedParameter
 			@Parameter(name = "dumpster_id", description = "ID of the dumpster", required = true, example = "d1")
-			@PathVariable("dumpster_id") String dumpster_id,
+			@PathVariable ("dumpster_id") String dumpster_id,
 			@ValidatedParameter
-			@PathVariable("plant_id") String plant_id,
+			@Parameter(name="plant_id",description = "ID of the plant",required=true,example="p1") 
+			@PathVariable ("plant_id") String plant_id,
 			@RequestHeader("Authorization") String authHeader){
 		try {
 			if(authHeader == null || !authHeader.startsWith("Bearer ")) {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
-			String token = authHeader.substring(7); //Quitar el Bearer del token
+			String token = authHeader.substring(7); //Remove "Bearer " from token
 			Employee employee = AuthService.validateToken(token);
 			if(employee == null) {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -82,7 +88,79 @@ public class EcoembesController {
 		}
 	}
 	
-
+	//Get recycling plant info by id
+	@Operation(
+			summary = "Get recycling plant by ID",
+			description = "Get information of a recycling plant based on its ID.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "OK: Successfully retrieved plant summary"),
+					@ApiResponse(responseCode = "204", description = "No Content: No plant found with the specified ID"),
+					@ApiResponse(responseCode = "400", description = "Bad Request: ID is invalid"),
+					@ApiResponse(responseCode = "500", description = "Internal Server error")
+			}
+		)
+		@GetMapping("/plants/{plant_id}")
+		public ResponseEntity<RecyclingPlantDTO> getRecyclingPlantById(
+				@ValidatedParameter
+				@Parameter(name="plant_id",description = "ID of the plant",required=true,example="p1") 
+				@PathVariable ("plant_id") String plant_id,
+				@RequestHeader("Authorization") String authHeader){
+			try {
+				if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+				String token = authHeader.substring(7); //Remove "Bearer " from token
+				Employee employee = AuthService.validateToken(token);
+				if(employee == null) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+				RecyclingPlant plant = ecoembesService.getRecyclingPlantById(plant_id);
+				if (plant == null) {
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				}else {
+					RecyclingPlantDTO plantDTO = plantToDTO(plant);
+					return new ResponseEntity<>(plantDTO, HttpStatus.OK);
+				}
+			} catch (Exception e) {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+	
+	
+	//GET all recycling plants (to check capacity)
+		@Operation(
+			summary = "Get all recycling plants",
+			description = "Retrieves a list of all plants in the system.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "OK: Successfully retrieved the list of plants"),
+					@ApiResponse(responseCode = "204", description = "No Content: No plants found"),
+					@ApiResponse(responseCode = "500", description = "Internal Server error")
+			}
+		)
+			
+		@GetMapping("/plants")
+		public ResponseEntity<List<RecyclingPlantDTO>> getAllRecyclingPlants(
+				@RequestHeader("Authorization") String authHeader){
+			try {
+				if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+				String token = authHeader.substring(7); //Quitar el Bearer del token
+				Employee employee = AuthService.validateToken(token);
+				if(employee == null) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+				List<RecyclingPlant> plants = ecoembesService.getAllPlants();
+				if (plants.isEmpty()) {
+					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+				}
+				List<RecyclingPlantDTO> plantsDTOs = plants.stream().map(plant -> 
+				new RecyclingPlantDTO(plant.getPlant_id(), plant.getCurrent_capacity())).collect(Collectors.toList());
+				return new ResponseEntity<>(plantsDTOs, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
 	//Converts RecyclingPlant to RecyclingPlantDTO
 	private RecyclingPlantDTO plantToDTO(RecyclingPlant plant) {
 		return new RecyclingPlantDTO(
@@ -90,6 +168,4 @@ public class EcoembesController {
 				plant.getCurrent_capacity()
 		);
 	}
-	
-	
 }

@@ -34,7 +34,6 @@ public class AuthService {
     public Optional<Boolean> logout(String token) {
         if (tokenStore.containsKey(token)) {
             tokenStore.remove(token);
-
             return Optional.of(true);
         } else {
             return Optional.empty();
@@ -64,7 +63,6 @@ public class AuthService {
     }
     public static Employee validateToken(String token) {
 		if (tokenStore.containsKey(token)) {
-			token = token.replace("Bearer ", "");
 			Employee employee = tokenStore.get(token);
 			return employee;
 		} else {

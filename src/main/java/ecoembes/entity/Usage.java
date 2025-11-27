@@ -1,24 +1,25 @@
 package ecoembes.entity;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Usage {
-	private Date date;
+	private LocalDate date;
 	private String usage_id;
 	private FillLevel fill_level; //GREEN, ORANGE, RED
 	public Usage() {
 	}
-	public Usage(Date date, String usage_id, FillLevel fill_level) {
+	public Usage(LocalDate date, String usage_id, FillLevel fill_level) {
 		super();
 		this.date = date;
 		this.usage_id = usage_id;
 		this.fill_level = fill_level;
 	}
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 	public String getUsage_id() {

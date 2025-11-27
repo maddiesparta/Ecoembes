@@ -17,20 +17,28 @@ public class Dumpster {
 	public Dumpster() {
 	}
 
-	public Dumpster(String dumpster_id, String location, String postal_code, int capacity, float estimated_weight,
+	public Dumpster(String dumpster_id, String location, String postal_code, int capacity,
 			 int container_number) {
 		super();
 		this.dumpster_id = dumpster_id;
 		this.location = location;
 		this.postal_code = postal_code;
 		this.capacity = capacity;
-		this.estimated_weight = estimated_weight;
+		// Determine fill level based on container number (it can also be set directly)
 		if(container_number < capacity / 3) {
 			this.fill_level = FillLevel.GREEN;
 		} else if(container_number < (2 * capacity) /3) {
 			this.fill_level = FillLevel.ORANGE;
 		} else {
 			this.fill_level = FillLevel.RED;
+		}
+		// Estimate weight based on fill level
+		if(this.fill_level == FillLevel.GREEN) {
+			this.estimated_weight = (float) (0.024 * 0.3f);
+		} else if(this.fill_level == FillLevel.ORANGE) {
+			this.estimated_weight = 024 * 0.6f;
+		} else {
+			this.estimated_weight = 024;
 		}
 		this.container_number = container_number;
 	}

@@ -23,6 +23,7 @@ public class AuthController {
 		this.authService = authService;
 	}
 	
+	//Login endpoint
 	@Operation(
 		summary = "Login to the system",
 		description = "Allows a user to login by providing email and password, returning an authorization token upon successful authentication.",
@@ -56,7 +57,8 @@ public class AuthController {
     @PostMapping("/logout")    
     public ResponseEntity<Void> logout(
     		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Authorization token in plain text", required = true)
-    		@RequestBody String token) {    	
+    		@RequestBody String token) {
+    	token = token.replace("Bearer ", "");
         Optional<Boolean> result = authService.logout(token);
     	
         if (result.isPresent() && result.get()) {

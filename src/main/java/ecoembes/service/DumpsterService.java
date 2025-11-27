@@ -1,5 +1,6 @@
 package ecoembes.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,20 +41,35 @@ public class DumpsterService {
 		
 		//Add new dumpster
 		public void addDumpster(Dumpster dumpster) {
-			dumpsterRepository.put(dumpster.getDumpster_id(), dumpster);
+			if(dumpsterRepository.get(dumpster.getDumpster_id()) != null) {
+				throw new IllegalArgumentException("Dumpster with id " + dumpster.getDumpster_id() + " already exists.");
+			}else {
+				dumpsterRepository.put(dumpster.getDumpster_id(), dumpster);
+			}
+			
 		}
 		
 		//Update dumpster
 		public void updateDumpster(String dumpster_id, int container_number, FillLevel fill_level) {
 			Dumpster dumpster = dumpsterRepository.get(dumpster_id);
+			
 			if (dumpster != null) {
+				dumpsterRepository.remove(dumpster_id);
+				UsageDTO usage = new UsageDTO(LocalDate.now(), fill_level);
+				if(usageRepository.get(dumpster) == null) {
+					usageRepository.put(dumpster, new ArrayList<>());
+					usageRepository.get(dumpster).add(usage);
+				}else {
+					usageRepository.get(dumpster).add(usage);
+				}
 				dumpster.setContainer_number(container_number);
 				dumpster.setFill_level(fill_level);
+				dumpsterRepository.put(dumpster_id, dumpster);
 			}
 		}
 		
 		//Get usage of a dumpster given a period of 2 dates
-		public List<UsageDTO> getDumpsterUsage(Dumpster dumpster, Date start_date, Date end_date) {
+		public List<UsageDTO> getDumpsterUsage(Dumpster dumpster, LocalDate start_date, LocalDate end_date) {
 			List<UsageDTO> result = new ArrayList<>();
 			List<UsageDTO> usages = usageRepository.get(dumpster);
 			if(usages == null) {

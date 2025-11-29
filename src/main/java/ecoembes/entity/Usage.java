@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Usage {
@@ -17,21 +18,42 @@ public class Usage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long usage_id;
 	
+	@ManyToOne(optional = false)
+	private Dumpster dumpster;
+	
 	@Column(nullable = false, unique = true)
     private String postal_code;
 	
 	@Column(nullable = false)
 	private LocalDate date;
-	
-	//private LocalDate date;
-	//private String usage_id;
+
+	@Column(nullable = false)
 	private FillLevel fill_level; //GREEN, ORANGE, RED
+	
 	public Usage() {
 	}
-	public Usage(LocalDate date, Long usage_id, FillLevel fill_level) {
-		super();
+	public Usage(Dumpster dumpster, LocalDate date, FillLevel fill_level) {
+		this.dumpster = dumpster;
 		this.date = date;
 		this.fill_level = fill_level;
+	}
+	public Long getUsage_id() {
+		return usage_id;
+	}
+	public void setUsage_id(Long usage_id) {
+		this.usage_id = usage_id;
+	}
+	public Dumpster getDumpster() {
+		return dumpster;
+	}
+	public void setDumpster(Dumpster dumpster) {
+		this.dumpster = dumpster;
+	}
+	public String getPostal_code() {
+		return postal_code;
+	}
+	public void setPostal_code(String postal_code) {
+		this.postal_code = postal_code;
 	}
 	public LocalDate getDate() {
 		return date;
@@ -39,12 +61,6 @@ public class Usage {
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
-	public Long getUsage_id() {
-		return usage_id;
-	}
-//	public void setUsage_id(String usage_id) {
-//		this.usage_id = usage_id;
-//	}
 	public FillLevel getFill_level() {
 		return fill_level;
 	}
@@ -53,7 +69,7 @@ public class Usage {
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(date, fill_level, usage_id);
+		return Objects.hash(date, dumpster, fill_level, postal_code, usage_id);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -64,9 +80,9 @@ public class Usage {
 		if (getClass() != obj.getClass())
 			return false;
 		Usage other = (Usage) obj;
-		return Objects.equals(date, other.date) && fill_level == other.fill_level
+		return Objects.equals(date, other.date) && Objects.equals(dumpster, other.dumpster)
+				&& fill_level == other.fill_level && Objects.equals(postal_code, other.postal_code)
 				&& Objects.equals(usage_id, other.usage_id);
 	}
-	
 	
 }

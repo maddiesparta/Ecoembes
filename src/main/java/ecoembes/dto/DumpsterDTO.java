@@ -4,7 +4,7 @@ package ecoembes.dto;
 import ecoembes.entity.FillLevel;
 
 public class DumpsterDTO {
-	private String dumpster_id;
+	private Long dumpster_id;
 	private String location;
 	private String postal_code;
 	private FillLevel fill_level; //GREEN, ORANGE, RED
@@ -13,7 +13,7 @@ public class DumpsterDTO {
 	public DumpsterDTO() {
 	}
 
-	public DumpsterDTO(String dumpster_id, String location, String postal_code, FillLevel fill_level,
+	public DumpsterDTO(Long dumpster_id, String location, String postal_code, FillLevel fill_level,
 			int container_number) {
 		super();
 		this.dumpster_id = dumpster_id;
@@ -23,11 +23,11 @@ public class DumpsterDTO {
 		this.container_number = container_number;
 	}
 
-	public String getDumpster_id() {
+	public Long getDumpster_id() {
 		return dumpster_id;
 	}
 
-	public void setDumpster_id(String dumpster_id) {
+	public void setDumpster_id(Long dumpster_id) {
 		this.dumpster_id = dumpster_id;
 	}
 

@@ -9,5 +9,5 @@ import ecoembes.entity.RecyclingPlant;
 
 @Repository
 public interface RecyclingPlantRepository extends JpaRepository<RecyclingPlant, Long> {
-	Optional<RecyclingPlant> findByName(String name);
+	Optional<RecyclingPlant> findByName(String plant_name);
 }

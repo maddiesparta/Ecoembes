@@ -24,8 +24,8 @@ public class Dumpster {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dumpster_id;
 	
-	@Column(nullable = false, unique = true)
-    private String postal_code;
+	@Column(nullable = false, unique = false)
+    private String postalCode;
 	
 	@Column(nullable = false)
     private String location;
@@ -69,7 +69,7 @@ public class Dumpster {
 			 int container_number) {
 		super();
 		this.location = location;
-		this.postal_code = postal_code;
+		this.postalCode = postal_code;
 		this.capacity = capacity;
 		// Determine fill level based on container number (it can also be set directly)
 		if(container_number < capacity / 3) {
@@ -90,6 +90,16 @@ public class Dumpster {
 		this.container_number = container_number;
 	}
 
+	
+	public Dumpster(Long dumpster_id, String postal_code, String location, int capacity, int container_number) {
+		super();
+		this.dumpster_id = dumpster_id;
+		this.postalCode = postal_code;
+		this.location = location;
+		this.capacity = capacity;
+		this.container_number = container_number;
+	}
+	
 	public Long getDumpster_id() {
 		return dumpster_id;
 	}
@@ -107,11 +117,11 @@ public class Dumpster {
 	}
 
 	public String getPostal_code() {
-		return postal_code;
+		return postalCode;
 	}
 
 	public void setPostal_code(String postal_code) {
-		this.postal_code = postal_code;
+		this.postalCode = postal_code;
 	}
 
 	public int getCapacity() {
@@ -162,7 +172,7 @@ public class Dumpster {
 	@Override
 	public int hashCode() {
 		return Objects.hash(allocations, capacity, container_number, dumpster_id, estimated_weight, fill_level,
-				location, postal_code, usage);
+				location, postalCode, usage);
 	}
 
 	@Override
@@ -178,7 +188,7 @@ public class Dumpster {
 				&& container_number == other.container_number && Objects.equals(dumpster_id, other.dumpster_id)
 				&& Float.floatToIntBits(estimated_weight) == Float.floatToIntBits(other.estimated_weight)
 				&& fill_level == other.fill_level && Objects.equals(location, other.location)
-				&& Objects.equals(postal_code, other.postal_code) && Objects.equals(usage, other.usage);
+				&& Objects.equals(postalCode, other.postalCode) && Objects.equals(usage, other.usage);
 	}
 	
 

@@ -23,7 +23,7 @@ public class RecyclingPlant {
     private Long plant_id;
 	
 	@Column(nullable = false, unique = true)
-    private String plant_name;
+    private String name;
 	
 	@Column(nullable = false)
     private float total_capacity;
@@ -57,7 +57,7 @@ public class RecyclingPlant {
 	// quitado el id
 	public RecyclingPlant(String plant_name, float total_capacity) {
 		super();
-		this.plant_name = plant_name;
+		this.name = plant_name;
 		this.total_capacity = total_capacity;
 		this.current_capacity = 0;
 	}
@@ -71,11 +71,11 @@ public class RecyclingPlant {
 //	}
 
 	public String getPlant_name() {
-		return plant_name;
+		return name;
 	}
 
 	public void setPlant_name(String plant_name) {
-		this.plant_name = plant_name;
+		this.name = plant_name;
 	}
 
 	public float getTotal_capacity() {
@@ -111,7 +111,7 @@ public class RecyclingPlant {
 
 	@Override
 	public int hashCode() { // Quitado dumpsters
-		return Objects.hash(allocations, current_capacity, plant_id, plant_name, total_capacity);
+		return Objects.hash(allocations, current_capacity, plant_id, name, total_capacity);
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class RecyclingPlant {
 		return Objects.equals(allocations, other.allocations)
 				&& Float.floatToIntBits(current_capacity) == Float.floatToIntBits(other.current_capacity)
 				&& Objects.equals(plant_id, other.plant_id)
-				&& Objects.equals(plant_name, other.plant_name)
+				&& Objects.equals(name, other.name)
 				&& Float.floatToIntBits(total_capacity) == Float.floatToIntBits(other.total_capacity);
 	} // Quitado && Objects.equals(dumpsters, other.dumpsters) &&
 	

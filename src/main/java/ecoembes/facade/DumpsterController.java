@@ -2,9 +2,7 @@ package ecoembes.facade;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -12,21 +10,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ecoembes.dto.CredentialsDTO;
+import ecoembes.dao.DumpsterRepository;
 import ecoembes.dto.DumpsterDTO;
-import ecoembes.dto.RecyclingPlantDTO;
 import ecoembes.dto.UsageDTO;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.Employee;
-import ecoembes.entity.FillLevel;
-import ecoembes.entity.RecyclingPlant;
+
 import ecoembes.service.AuthService;
 import ecoembes.service.DumpsterService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,10 +32,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @RequestMapping("/dumpsters")
 public class DumpsterController {
 
+    private final DumpsterRepository dumpsterRepository;
+
 	private final DumpsterService dumpsterService;	
 	
-	public DumpsterController(DumpsterService dumpsterService) {
+	public DumpsterController(DumpsterService dumpsterService, DumpsterRepository dumpsterRepository) {
 		this.dumpsterService = dumpsterService;
+		this.dumpsterRepository = dumpsterRepository;
 	}
 	
 	//GET all dumpsters
@@ -112,8 +109,7 @@ public class DumpsterController {
 		            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		        }
 
-		        List<Dumpster> allDumpsters = dumpsterService.getAllDumpsters();
-		        List<Dumpster> dumpsters = dumpsterService.getDumpstersByPostalCode(postal_code, allDumpsters);
+		        List<Dumpster> dumpsters = dumpsterService.getDumpstersByPostalCode(postal_code);
 
 		        if (dumpsters.isEmpty()) {
 		            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -147,7 +143,7 @@ public class DumpsterController {
 			@GetMapping("/{dumpster_id}")
 			public ResponseEntity<DumpsterDTO> getDumpsterByID(
 					@Parameter(name = "dumpster_id", description = "ID of the dumpster", required = true, example = "d1")
-		    		@PathVariable ("dumpster_id") String dumpster_id,
+		    		@PathVariable ("dumpster_id") Long dumpster_id,
 					@RequestHeader("Authorization") String authHeader){
 				try {
 					if(authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -158,7 +154,7 @@ public class DumpsterController {
 					if(employee == null) {
 						return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 					}
-					Dumpster dumpster = DumpsterService.getDumpsterById(dumpster_id);
+					Dumpster dumpster = dumpsterService.getDumpsterById(dumpster_id);
 					if (dumpster == null) {
 						return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 					}else {
@@ -182,7 +178,7 @@ public class DumpsterController {
 		@PostMapping("/add/{dumpster_id}")
 	    public ResponseEntity<Void> addDumpster(
 	    		@Parameter(name = "dumpster_id", description = "ID of the dumpster", required = true, example = "d1")
-	    		@PathVariable ("dumpster_id") String dumpster_id,
+	    		@PathVariable ("dumpster_id") Long dumpster_id,
 	    		    
 	    		@Parameter(name = "location", description = "location of the dumpster", required = true, example = "Calle Falsa 123")
 	    	    @RequestParam ("location") String location,
@@ -206,23 +202,23 @@ public class DumpsterController {
 	            if (employee == null) {
 	                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	            }
-	            if (dumpster_id == null || dumpster_id.trim().isEmpty() ||
+	            if (dumpster_id == null ||
 	                location == null || location.trim().isEmpty() ||
 	                postal_code == null || postal_code.trim().isEmpty()) {
 	                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	            }
-	            if(DumpsterService.getDumpsterById(dumpster_id) != null) {
+	            if(dumpsterService.getDumpsterById(dumpster_id) != null) {
 	            	return new ResponseEntity<>(HttpStatus.CONFLICT);
 	            }
 	            Dumpster dumpster = new Dumpster(
 	            		dumpster_id,
-	            		location,
 	            		postal_code,
+	            		location,
 	            		capacity, 
 	            		container_number
 	            );
 	            
-	            dumpsterService.addDumpster(dumpster);
+	            dumpsterRepository.save(dumpster);
 	            
 	            return new ResponseEntity<>(HttpStatus.OK);
 	        } catch (Exception e) {
@@ -245,7 +241,7 @@ public class DumpsterController {
 		@GetMapping("/usage/{dumpster_id}")
 		public ResponseEntity<List<UsageDTO>> getDumpsterUsageBetweenDates(
 				@Parameter(name = "dumpster_id", description = "ID of the dumpster", required = true, example = "d1")
-	    		@PathVariable ("dumpster_id") String dumpster_id,
+	    		@PathVariable ("dumpster_id") Long dumpster_id,
 	    		
 	    		@Parameter(name = "start_date", description = "Start date in format YYYY-MM-DD", required = true, example = "2023-01-01")
 	            @RequestParam("start_date") String start_date, 
@@ -266,7 +262,7 @@ public class DumpsterController {
 				if(employee == null) {
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				}
-				Dumpster dumpster = DumpsterService.getDumpsterById(dumpster_id);
+				Dumpster dumpster = dumpsterService.getDumpsterById(dumpster_id);
 				if (dumpster == null) {
 					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				}

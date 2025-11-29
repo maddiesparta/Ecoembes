@@ -31,9 +31,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 public class EcoembesController {
 
 	private final EcoembesService ecoembesService;
+	private final DumpsterService dumpsterService;
 	
-	public EcoembesController(EcoembesService ecoembesService) {
+	public EcoembesController(EcoembesService ecoembesService, DumpsterService dumpsterService) {
 		this.ecoembesService = ecoembesService;
+		this.dumpsterService = dumpsterService;
 	}
 	
 	
@@ -54,10 +56,10 @@ public class EcoembesController {
 	public ResponseEntity<Void> assignDumpsterToPlant(
 			@ValidatedParameter
 			@Parameter(name = "dumpster_id", description = "ID of the dumpster", required = true, example = "d1")
-			@PathVariable ("dumpster_id") String dumpster_id,
+			@PathVariable ("dumpster_id") Long dumpster_id,
 			@ValidatedParameter
 			@Parameter(name="plant_id",description = "ID of the plant",required=true,example="p1") 
-			@PathVariable ("plant_id") String plant_id,
+			@PathVariable ("plant_id") long plant_id,
 			@RequestHeader("Authorization") String authHeader){
 		try {
 			if(authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -68,7 +70,7 @@ public class EcoembesController {
 			if(employee == null) {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
-			Dumpster dumpster = DumpsterService.getDumpsterById(dumpster_id);
+			Dumpster dumpster = dumpsterService.getDumpsterById(dumpster_id);
 			if (dumpster == null) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -103,7 +105,7 @@ public class EcoembesController {
 		public ResponseEntity<RecyclingPlantDTO> getRecyclingPlantById(
 				@ValidatedParameter
 				@Parameter(name="plant_id",description = "ID of the plant",required=true,example="p1") 
-				@PathVariable ("plant_id") String plant_id,
+				@PathVariable ("plant_id") long plant_id,
 				@RequestHeader("Authorization") String authHeader){
 			try {
 				if(authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -155,7 +157,7 @@ public class EcoembesController {
 					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 				}
 				List<RecyclingPlantDTO> plantsDTOs = plants.stream().map(plant -> 
-				new RecyclingPlantDTO(plant.getPlant_id(), plant.getCurrent_capacity())).collect(Collectors.toList());
+				new RecyclingPlantDTO(plant.getPlant_name(), plant.getCurrent_capacity())).collect(Collectors.toList());
 				return new ResponseEntity<>(plantsDTOs, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

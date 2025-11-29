@@ -175,11 +175,8 @@ public class DumpsterController {
 				@ApiResponse(responseCode = "401", description = "Unauthorized: Invalid credentials, operation failed"),
 			}
 		)
-		@PostMapping("/add/{dumpster_id}")
+		@PostMapping("/add/")
 	    public ResponseEntity<Void> addDumpster(
-	    		@Parameter(name = "dumpster_id", description = "ID of the dumpster", required = true, example = "d1")
-	    		@PathVariable ("dumpster_id") Long dumpster_id,
-	    		    
 	    		@Parameter(name = "location", description = "location of the dumpster", required = true, example = "Calle Falsa 123")
 	    	    @RequestParam ("location") String location,
 	    		    
@@ -202,16 +199,12 @@ public class DumpsterController {
 	            if (employee == null) {
 	                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	            }
-	            if (dumpster_id == null ||
-	                location == null || location.trim().isEmpty() ||
+	            if (location == null || location.trim().isEmpty() ||
 	                postal_code == null || postal_code.trim().isEmpty()) {
 	                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	            }
-	            if(dumpsterService.getDumpsterById(dumpster_id) != null) {
-	            	return new ResponseEntity<>(HttpStatus.CONFLICT);
-	            }
+	        
 	            Dumpster dumpster = new Dumpster(
-	            		dumpster_id,
 	            		postal_code,
 	            		location,
 	            		capacity, 

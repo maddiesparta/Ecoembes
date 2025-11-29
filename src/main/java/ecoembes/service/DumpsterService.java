@@ -122,7 +122,7 @@ public class DumpsterService {
 		public List<UsageDTO> getDumpsterUsage(Dumpster dumpster, LocalDate start_date, LocalDate end_date) {
 			List<Usage> usage = usageRepository.findByDumpsterAndDateBetween(dumpster, start_date, end_date);
 			if (usage.isEmpty()) {
-	            throw new RuntimeException("Usage not found");
+	            return new ArrayList<>();
 	        }
 			List<UsageDTO> usageDTO = usage.stream().map(UsageDTO::new).toList();
 			return usageDTO;

@@ -71,6 +71,7 @@ public class Dumpster {
 		this.location = location;
 		this.postalCode = postal_code;
 		this.capacity = capacity;
+		this.container_number = container_number;
 		// Determine fill level based on container number (it can also be set directly)
 		if(container_number < capacity / 3) {
 			this.fill_level = FillLevel.GREEN;
@@ -83,11 +84,11 @@ public class Dumpster {
 		if(this.fill_level == FillLevel.GREEN) {
 			this.estimated_weight = (float) (0.024 * 0.3f);
 		} else if(this.fill_level == FillLevel.ORANGE) {
-			this.estimated_weight = 024 * 0.6f;
+			this.estimated_weight = (float) (0.024 * 0.6f);
 		} else {
-			this.estimated_weight = 024;
+			this.estimated_weight = (float) 0.024;
 		}
-		this.container_number = container_number;
+		
 	}
 
 	

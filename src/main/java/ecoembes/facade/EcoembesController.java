@@ -48,7 +48,7 @@ public class EcoembesController {
 				@ApiResponse(responseCode = "200", description = "OK: Successfully assigned the dumpster to the recycling plant"),
 				@ApiResponse(responseCode = "400", description = "Bad Request: Capacity exceeded"),
 				@ApiResponse(responseCode = "404", description = "Not Found: Dumpster or recycling plant not found"),
-				@ApiResponse(responseCode = "405", description = "Unauthorized: Invalid or missing authentication token"),
+				@ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or missing authentication token"),
 				@ApiResponse(responseCode = "500", description = "Internal Server error")
 		}
 	)
@@ -79,7 +79,7 @@ public class EcoembesController {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 			if(plant.getTotal_capacity() < plant.getCurrent_capacity() + dumpster.getCapacity()) {
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}else {
 				ecoembesService.createAllocation(dumpster, plant, employee);
 			}

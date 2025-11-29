@@ -1,19 +1,36 @@
 package ecoembes.entity;
 
-import java.sql.Date;
 import java.time.LocalDate;
+
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Usage {
+	
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long usage_id;
+	
+	@Column(nullable = false, unique = true)
+    private String postal_code;
+	
+	@Column(nullable = false)
 	private LocalDate date;
-	private String usage_id;
+	
+	//private LocalDate date;
+	//private String usage_id;
 	private FillLevel fill_level; //GREEN, ORANGE, RED
 	public Usage() {
 	}
-	public Usage(LocalDate date, String usage_id, FillLevel fill_level) {
+	public Usage(LocalDate date, Long usage_id, FillLevel fill_level) {
 		super();
 		this.date = date;
-		this.usage_id = usage_id;
 		this.fill_level = fill_level;
 	}
 	public LocalDate getDate() {
@@ -22,12 +39,12 @@ public class Usage {
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
-	public String getUsage_id() {
+	public Long getUsage_id() {
 		return usage_id;
 	}
-	public void setUsage_id(String usage_id) {
-		this.usage_id = usage_id;
-	}
+//	public void setUsage_id(String usage_id) {
+//		this.usage_id = usage_id;
+//	}
 	public FillLevel getFill_level() {
 		return fill_level;
 	}

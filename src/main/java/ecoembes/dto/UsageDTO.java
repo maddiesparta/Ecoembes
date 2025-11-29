@@ -1,7 +1,6 @@
 package ecoembes.dto;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import ecoembes.entity.FillLevel;
 

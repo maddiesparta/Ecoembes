@@ -1,5 +1,5 @@
 package ecoembes.entity;
 
 public enum FillLevel {
-	RED, ORANGE, GREEN
+	GREEN, ORANGE, RED
 }

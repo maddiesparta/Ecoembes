@@ -2,18 +2,48 @@ package ecoembes.entity;
 
 import java.time.LocalDate;
 
+
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
 public class Allocation {
-	private Long allocation_id;
-	private LocalDate date;
+	
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long allocation_id;
+	
+	@Column(nullable = false)
+    private LocalDate date;
+	
+	@ManyToOne
+	@JoinColumn(name = "dumpster_id", nullable = false)
 	private Dumpster dumpster;
+	
+	@ManyToOne
+	@JoinColumn(name = "plant_id", nullable = false)
 	private RecyclingPlant plant;
+	
+	@ManyToOne
+	@JoinColumn(name = "employee_id", nullable = false)
 	private Employee employee;
+	
+	//private Long allocation_id; No se si quitarlo y usar el primero o dejarla como el id y no el generado
+	//private LocalDate date;
+	//private Dumpster dumpster;
+	//private RecyclingPlant plant;
+	//private Employee employee;
 	
 	public Allocation() {
 	}
-
+	// depende del id que usemos lo modificamos
 	public Allocation(Long allocation_id, LocalDate date, Dumpster dumpster, RecyclingPlant plant, Employee employee) {
 		super();
 		this.allocation_id = allocation_id;
@@ -27,9 +57,9 @@ public class Allocation {
 		return allocation_id;
 	}
 
-	public void setAllocation_id(Long allocation_id) {
-		this.allocation_id = allocation_id;
-	}
+//	public void setAllocation_id(Long allocation_id) {
+//		this.allocation_id = allocation_id;
+//	}
 
 	public LocalDate getDate() {
 		return date;

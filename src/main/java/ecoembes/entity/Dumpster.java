@@ -1,26 +1,73 @@
 package ecoembes.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "dumpster")
 public class Dumpster {
-	private String dumpster_id;
-	private String location;
-	private String postal_code;
-	private int capacity; //estimated total number of containers it can hold
-	private float estimated_weight;//tons
-	private FillLevel fill_level; //GREEN, ORANGE, RED
-	private int container_number; //number of containers in the dumpster
-	private List<Usage> usage;
-	private List<Allocation> allocations;
+	
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long dumpster_id;
+	
+	@Column(nullable = false, unique = true)
+    private String postal_code;
+	
+	@Column(nullable = false)
+    private String location;
+	
+	@Column(nullable = false)
+    private int capacity;
+	
+	@Column(nullable = false)
+    private float estimated_weight;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private FillLevel fill_level; // GREEN, ORANGE, RED
+	
+	@Column(nullable = false)
+    private int container_number;
+	
+	// One-to-many relationship with Usage entity
+    @OneToMany(mappedBy = "dumpster", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Usage> usage = new ArrayList<>();
+    
+    // One-to-many relationship with Allocation entity
+    @OneToMany(mappedBy = "dumpster", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Allocation> allocations = new ArrayList<>();
+	
+	
+	//private String dumpster_id; No se si hay que hacerlo tambien para este attr
+	//private String location;
+	//private String postal_code;
+	//private int capacity; //estimated total number of containers it can hold
+	//private float estimated_weight; //tons
+	//private FillLevel fill_level; //GREEN, ORANGE, RED // No tengo muy claro como ponerlo 
+	//private int container_number; //number of containers in the dumpster
+	//private List<Usage> usage;
+	//private List<Allocation> allocations;
 	
 	public Dumpster() {
 	}
-
-	public Dumpster(String dumpster_id, String location, String postal_code, int capacity,
+	// sin dumpster_id ahora
+	public Dumpster(String location, String postal_code, int capacity,
 			 int container_number) {
 		super();
-		this.dumpster_id = dumpster_id;
 		this.location = location;
 		this.postal_code = postal_code;
 		this.capacity = capacity;
@@ -43,13 +90,13 @@ public class Dumpster {
 		this.container_number = container_number;
 	}
 
-	public String getDumpster_id() {
+	public Long getDumpster_id() {
 		return dumpster_id;
 	}
 
-	public void setDumpster_id(String dumpster_id) {
-		this.dumpster_id = dumpster_id;
-	}
+//	public void setDumpster_id(String dumpster_id) {
+//		this.dumpster_id = dumpster_id;
+//	}
 
 	public String getLocation() {
 		return location;

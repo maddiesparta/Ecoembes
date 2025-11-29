@@ -1,6 +1,5 @@
 package ecoembes.dto;
 
-import java.util.Objects;
 
 import ecoembes.entity.FillLevel;
 

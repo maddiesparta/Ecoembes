@@ -28,5 +28,11 @@ public class RecyclingPlantDTO {
 	public void setCurrent_capacity(float current_capacity) {
 		this.current_capacity = current_capacity;
 	}
+
+	@Override
+	public String toString() {
+		return "RecyclingPlantDTO [plant_name=" + plant_name + ", current_capacity=" + current_capacity + "]";
+	}
+	
 		
 }

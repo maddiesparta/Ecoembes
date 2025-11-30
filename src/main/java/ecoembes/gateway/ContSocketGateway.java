@@ -12,9 +12,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ecoembes.dto.RecyclingPlantDTO;
 
-public class ContSocketGateway implements IGateway{
-	
-	private static final ContSocketGateway INSTANCE = new ContSocketGateway();
+public class ContSocketGateway implements IGateway {
+    
+    private static final ContSocketGateway INSTANCE = new ContSocketGateway();
     private static final String SERVERIP = "127.0.0.1";
     private static final int SERVERPORT = 8001;
     private final ObjectMapper objectMapper = new ObjectMapper();

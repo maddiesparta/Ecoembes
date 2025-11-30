@@ -157,7 +157,7 @@ public class EcoembesController {
 					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 				}
 				List<RecyclingPlantDTO> plantsDTOs = plants.stream().map(plant -> 
-				new RecyclingPlantDTO(plant.getPlant_name(), plant.getCurrent_capacity())).collect(Collectors.toList());
+				new RecyclingPlantDTO(plant.getPlant_name(), plant.getCurrent_capacity(),plant.getTotal_capacity())).collect(Collectors.toList());
 				return new ResponseEntity<>(plantsDTOs, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -167,7 +167,8 @@ public class EcoembesController {
 	private RecyclingPlantDTO plantToDTO(RecyclingPlant plant) {
 		return new RecyclingPlantDTO(
 				plant.getPlant_name(),
-				plant.getCurrent_capacity()
+				plant.getCurrent_capacity(),
+				plant.getTotal_capacity()
 		);
 	}
 }

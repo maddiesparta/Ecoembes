@@ -65,8 +65,6 @@ public class EcoembesService {
 			//allocationRepository.put(String.valueOf(allocation.getAllocation_id()), allocation);
 			allocationRepository.save(allocation); // Con esto debería funcionar --> REPASAR
 		}
-		
-		
 	}
 	//Get all plants OLD
 //	public List<RecyclingPlant> getAllPlants() {

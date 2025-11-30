@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ecoembes.dto.DumpsterDTO;
+import ecoembes.dto.RecyclingPlantDTO;
+
+import java.time.LocalDate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,17 +55,15 @@ public class PlasSBGateway implements IGateway{
 	
 	// TODO HAY QUE HACER ESTE METODO (Pillar RecPlantDTO igual)
 	@Override
-	public String getCapacity() {
+	public String getCapacity(LocalDate date) {
 		// Hay que cambiar endpoint --> /auctions/categories"
-		DumpsterDTO[] dumpsters = restTemplate.getForObject(serverURL + ":" + String.valueOf(serverPort) + "/auctions/categories", DumpsterDTO[].class);
+		RecyclingPlantDTO plants = restTemplate.getForObject(serverURL + ":" + String.valueOf(serverPort) + "/plants?date=" + date, RecyclingPlantDTO.class);
 		  log.info("dumpsters - All dumpsters info ...");
 		  
-		  if (dumpsters != null) {
-			  	for (DumpsterDTO d: dumpsters) {
-			  		log.info(d.toString());
-			  	}
+		  if (plants != null) {
+			  log.info(plants.toString());
 		  }
-		  return "dumpsters -  all dumpsters on console (if not null) ";
+		  return "plants -  all dumpsters on console (if not null) ";
 	}
 
 }

@@ -3,14 +3,16 @@ package ecoembes.dto;
 public class RecyclingPlantDTO {
 	private String plant_name;
 	private float current_capacity;
+	private float total_capacity;
 	
 	public RecyclingPlantDTO() {
 	}
 	
-	public RecyclingPlantDTO(String plant_name, float current_capacity) {
+	public RecyclingPlantDTO(String plant_name, float current_capacity,float total_capacity) {
 		super();
 		this.plant_name = plant_name;
 		this.current_capacity = current_capacity;
+		this.total_capacity = total_capacity;
 	}
 
 	public String getPlant_name() {
@@ -28,11 +30,14 @@ public class RecyclingPlantDTO {
 	public void setCurrent_capacity(float current_capacity) {
 		this.current_capacity = current_capacity;
 	}
-
-	@Override
-	public String toString() {
-		return "RecyclingPlantDTO [plant_name=" + plant_name + ", current_capacity=" + current_capacity + "]";
+	public float getTotal_capacity() {
+		return total_capacity;
 	}
+	public void setTotal_capacity(float total_capacity) {
+		this.total_capacity = total_capacity;
+	}
+
+
 	
 		
 }

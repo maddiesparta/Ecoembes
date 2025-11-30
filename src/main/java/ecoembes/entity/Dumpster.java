@@ -88,7 +88,6 @@ public class Dumpster {
 		} else {
 			this.estimated_weight = (float) 0.024;
 		}
-		
 	}
 
 	

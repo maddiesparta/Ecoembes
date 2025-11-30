@@ -1,31 +1,30 @@
 package ecoembes.factory;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ecoembes.entity.LogInType;
-
 import ecoembes.gateway.ContSocketGateway;
 import ecoembes.gateway.PlasSBGateway;
 import ecoembes.gateway.IGateway;
 
-
+@Service
 public class GatewayFactory {
-	
-	private static GatewayFactory instance;
-	private GatewayFactory() {}
-	
-	public static GatewayFactory getInstance() {
-		if(instance == null) {
-			PlasSBGateway.start();
-			instance = new GatewayFactory();
-		}
-		return instance;
-	}
-	
+
+    private final PlasSBGateway plasSBGateway;
+    private final ContSocketGateway contSocketGateway;
+
+    @Autowired
+    public GatewayFactory(PlasSBGateway plasSBGateway, ContSocketGateway contSocketGateway) {
+        this.plasSBGateway = plasSBGateway;
+        this.contSocketGateway = contSocketGateway;
+    }
+
     public IGateway createGateway(LogInType type) {
         switch (type) {
             case PLASSB:
-                return PlasSBGateway.getInstance();
+                return plasSBGateway;
             case CONTSOCKET:
-                return ContSocketGateway.getInstance();
+                return contSocketGateway;
             default:
                 return null;
         }

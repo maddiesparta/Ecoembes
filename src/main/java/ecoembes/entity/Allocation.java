@@ -21,7 +21,7 @@ public class Allocation {
     private Long allocation_id;
 	
 	@Column(nullable = false)
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
 	
 	@ManyToOne
 	@JoinColumn(name = "dumpster_id", nullable = false)
@@ -44,9 +44,8 @@ public class Allocation {
 	public Allocation() {
 	}
 	// depende del id que usemos lo modificamos
-	public Allocation(Long allocation_id, LocalDate date, Dumpster dumpster, RecyclingPlant plant, Employee employee) {
+	public Allocation(LocalDate date, Dumpster dumpster, RecyclingPlant plant, Employee employee) {
 		super();
-		this.allocation_id = allocation_id;
 		this.date = LocalDate.now();
 		this.dumpster = dumpster;
 		this.plant = plant;

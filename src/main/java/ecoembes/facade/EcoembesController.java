@@ -31,9 +31,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 public class EcoembesController {
 
 	private final EcoembesService ecoembesService;
+	private final DumpsterService dumpsterService;
 	
-	public EcoembesController(EcoembesService ecoembesService) {
+	public EcoembesController(EcoembesService ecoembesService, DumpsterService dumpsterService) {
 		this.ecoembesService = ecoembesService;
+		this.dumpsterService = dumpsterService;
 	}
 	
 	
@@ -46,7 +48,7 @@ public class EcoembesController {
 				@ApiResponse(responseCode = "200", description = "OK: Successfully assigned the dumpster to the recycling plant"),
 				@ApiResponse(responseCode = "400", description = "Bad Request: Capacity exceeded"),
 				@ApiResponse(responseCode = "404", description = "Not Found: Dumpster or recycling plant not found"),
-				@ApiResponse(responseCode = "405", description = "Unauthorized: Invalid or missing authentication token"),
+				@ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or missing authentication token"),
 				@ApiResponse(responseCode = "500", description = "Internal Server error")
 		}
 	)
@@ -54,10 +56,10 @@ public class EcoembesController {
 	public ResponseEntity<Void> assignDumpsterToPlant(
 			@ValidatedParameter
 			@Parameter(name = "dumpster_id", description = "ID of the dumpster", required = true, example = "d1")
-			@PathVariable ("dumpster_id") String dumpster_id,
+			@PathVariable ("dumpster_id") Long dumpster_id,
 			@ValidatedParameter
 			@Parameter(name="plant_id",description = "ID of the plant",required=true,example="p1") 
-			@PathVariable ("plant_id") String plant_id,
+			@PathVariable ("plant_id") long plant_id,
 			@RequestHeader("Authorization") String authHeader){
 		try {
 			if(authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -68,7 +70,7 @@ public class EcoembesController {
 			if(employee == null) {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
-			Dumpster dumpster = DumpsterService.getDumpsterById(dumpster_id);
+			Dumpster dumpster = dumpsterService.getDumpsterById(dumpster_id);
 			if (dumpster == null) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
@@ -77,7 +79,7 @@ public class EcoembesController {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
 			if(plant.getTotal_capacity() < plant.getCurrent_capacity() + dumpster.getCapacity()) {
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}else {
 				ecoembesService.createAllocation(dumpster, plant, employee);
 			}
@@ -103,7 +105,7 @@ public class EcoembesController {
 		public ResponseEntity<RecyclingPlantDTO> getRecyclingPlantById(
 				@ValidatedParameter
 				@Parameter(name="plant_id",description = "ID of the plant",required=true,example="p1") 
-				@PathVariable ("plant_id") String plant_id,
+				@PathVariable ("plant_id") long plant_id,
 				@RequestHeader("Authorization") String authHeader){
 			try {
 				if(authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -155,7 +157,7 @@ public class EcoembesController {
 					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 				}
 				List<RecyclingPlantDTO> plantsDTOs = plants.stream().map(plant -> 
-				new RecyclingPlantDTO(plant.getPlant_id(), plant.getCurrent_capacity())).collect(Collectors.toList());
+				new RecyclingPlantDTO(plant.getPlant_name(), plant.getCurrent_capacity())).collect(Collectors.toList());
 				return new ResponseEntity<>(plantsDTOs, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

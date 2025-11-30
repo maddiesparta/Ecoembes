@@ -10,5 +10,5 @@ import ecoembes.entity.RecyclingPlant;
 
 @Repository
 public interface AllocationRepository extends JpaRepository<Allocation, Long>{
-	Optional<Allocation> findRecyclingPlant(RecyclingPlant rp);
+	Optional<Allocation> findByPlant(RecyclingPlant plant);
 }

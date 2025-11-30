@@ -50,8 +50,8 @@ public class DumpsterService {
 //			return result;
 //		}
 		//Get dumpsters of specific area (by postal code) NEW
-		public Optional<Dumpster> getDumpstersByPostalCode(String postal_code) {			
-			Optional<Dumpster> dumpster = dumpsterRepository.findByPostalCode(postal_code);
+		public List<Dumpster> getDumpstersByPostalCode(String postal_code) {			
+			List<Dumpster> dumpster = dumpsterRepository.findByPostalCode(postal_code);
 			
 			if (dumpster.isEmpty()) {
 	            throw new RuntimeException("Dumpster not found");
@@ -66,7 +66,7 @@ public class DumpsterService {
 //		}
 		
 		//Get dumpster by id NEW
-		public Dumpster getDumpsterById(long dumpster_id) {
+		public Dumpster getDumpsterById(Long dumpster_id) {
 			Optional<Dumpster> dumpster = dumpsterRepository.findById(dumpster_id);
 			
 			return dumpster.isPresent() ? dumpster.get() : null;
@@ -85,21 +85,20 @@ public class DumpsterService {
 			
 		
 		//Update dumpster TODO !!!
-		public void updateDumpster(String dumpster_id, int container_number, FillLevel fill_level) {
-			Dumpster dumpster = dumpsterRepository.get(dumpster_id);
+		public void updateDumpster(Long dumpster_id, int container_number, FillLevel fill_level) {
+			Optional<Dumpster> dumpsterOp = dumpsterRepository.findById(dumpster_id);
 			
-			if (dumpster != null) {
-				dumpsterRepository.remove(dumpster_id);
-				UsageDTO usage = new UsageDTO(LocalDate.now(), fill_level);
-				if(usageRepository.get(dumpster) == null) {
-					usageRepository.put(dumpster, new ArrayList<>());
-					usageRepository.get(dumpster).add(usage);
-				}else {
-					usageRepository.get(dumpster).add(usage);
-				}
+			if (dumpsterOp.isPresent()) {
+				Usage usage = new Usage();
+				usage.setDate(LocalDate.now());
+				usage.setFill_level(fill_level);
+				usageRepository.save(usage);
+				
+				Dumpster dumpster = dumpsterOp.get();
+				usage.setDumpster(dumpster);
 				dumpster.setContainer_number(container_number);
 				dumpster.setFill_level(fill_level);
-				dumpsterRepository.put(dumpster_id, dumpster);
+				dumpsterRepository.save(dumpster);
 			}
 		}
 		
@@ -120,11 +119,12 @@ public class DumpsterService {
 //		}
 		
 		//Get usage of a dumpster given a period of 2 dates  NEW (NS SI ESTÁ BIEN 100% --> REVISAR)
-		public Optional<Usage> getDumpsterUsage(Dumpster dumpster, LocalDate start_date, LocalDate end_date) {
-			Optional<Usage> usage = usageRepository.findByDumpsterDateBetween(dumpster, start_date, end_date);
+		public List<UsageDTO> getDumpsterUsage(Dumpster dumpster, LocalDate start_date, LocalDate end_date) {
+			List<Usage> usage = usageRepository.findByDumpsterAndDateBetween(dumpster, start_date, end_date);
 			if (usage.isEmpty()) {
-	            throw new RuntimeException("Usage not found");
-	        }			
-			return usage;
+	            return new ArrayList<>();
+	        }
+			List<UsageDTO> usageDTO = usage.stream().map(UsageDTO::new).toList();
+			return usageDTO;
 		}
 }

@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ecoembes.dto.DumpsterDTO;
+import ecoembes.dto.RecyclingPlantDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +52,10 @@ public class PlasSBGateway implements IGateway{
 		this.restTemplate = restTemplate;
 	}
 	
-	// TODO HAY QUE HACER ESTE METODO (Pillar RecPlantDTO igual)
+	// TODO HAY QUE HACER ESTE METODO (Pillar RecPlant)
 	@Override
 	public String getCapacity() {
+
 		// Hay que cambiar endpoint --> /auctions/categories"
 		DumpsterDTO[] dumpsters = restTemplate.getForObject(serverURL + ":" + String.valueOf(serverPort) + "/auctions/categories", DumpsterDTO[].class);
 		  log.info("dumpsters - All dumpsters info ...");
@@ -65,5 +67,20 @@ public class PlasSBGateway implements IGateway{
 		  }
 		  return "dumpsters -  all dumpsters on console (if not null) ";
 	}
+	
+	
+	
+//	@Override
+//	public String getCapacity(String date) {
+//		  RecyclingPlantDTO[] plant = restTemplate.getForObject(serverURL + ":" + String.valueOf(serverPort) + "/capacity?date=" + date, RecyclingPlantDTO[].class);
+//		  log.info("plant - Capacity info ...");
+//		  
+//		  if (plant != null) {
+//			  	for (RecyclingPlantDTO p: plant) {
+//			  		log.info(p.toString());
+//			  	}
+//		  }
+//		  return "capacities -  all categories on console (if not null) ";
+//	}
 
 }

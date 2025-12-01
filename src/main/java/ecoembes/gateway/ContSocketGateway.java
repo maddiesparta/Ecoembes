@@ -30,18 +30,23 @@ public class ContSocketGateway implements IGateway {
     }
 
     @Override
-    public String getCapacity(LocalDate date) {
+    public float getCapacity(LocalDate date) {
         System.out.println("   - Checking ContSocket dumpster capacity for date: " + date);
 
         try {
+        	
             String requestMessage = createCapacityRequest(date.toString());
+            System.out.println(" requestMessage " );
             String jsonResponse = sendRequestAndGetResponse(requestMessage);
+            System.out.println(" jsonResponse " );
             RecyclingPlantDTO plantDTO = objectMapper.readValue(jsonResponse, RecyclingPlantDTO.class);
+            System.out.println(" plantDTO " );
             return receiveResponse(plantDTO, date.toString());
+            
 
         } catch (Exception e) {
             System.err.println("# ContSocketGateway: Error - " + e.getMessage());
-            return "Error retrieving capacity from ContSocket: " + e.getMessage();
+            return -1;
         }
     }
 
@@ -72,15 +77,9 @@ public class ContSocketGateway implements IGateway {
         }
     }
 
-    private String receiveResponse(RecyclingPlantDTO plantDTO, String requestedDate) {
-        if (plantDTO == null) return "No valid response received from ContSocket";
+    private float receiveResponse(RecyclingPlantDTO plantDTO, String requestedDate) {
+        if (plantDTO == null) return -1;
 
-        return String.format(
-            " Plant: %s |  Capacity on %s: %.2f tons |  Total Capacity: %.2f tons",
-            plantDTO.getPlant_name(),
-            requestedDate,
-            plantDTO.getCurrent_capacity(),
-            plantDTO.getTotal_capacity()
-        );
+        return plantDTO.getCurrent_capacity();
     }
 }

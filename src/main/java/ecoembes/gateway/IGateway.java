@@ -4,5 +4,5 @@ import java.time.LocalDate;
 
 public interface IGateway {
 	
-	String getCapacity(LocalDate date);
+	float getCapacity(LocalDate date);
 }

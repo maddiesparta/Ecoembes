@@ -1,6 +1,5 @@
 package ecoembes.factory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ecoembes.entity.LogInType;
 import ecoembes.gateway.ContSocketGateway;
@@ -13,7 +12,6 @@ public class GatewayFactory {
     private final PlasSBGateway plasSBGateway;
     private final ContSocketGateway contSocketGateway;
 
-    @Autowired
     public GatewayFactory(PlasSBGateway plasSBGateway, ContSocketGateway contSocketGateway) {
         this.plasSBGateway = plasSBGateway;
         this.contSocketGateway = contSocketGateway;

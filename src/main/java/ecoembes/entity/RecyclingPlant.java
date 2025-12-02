@@ -28,29 +28,10 @@ public class RecyclingPlant {
 	@Column(nullable = false)
     private float total_capacity;
 	
-	@Column(nullable = false)
-    private float current_capacity;
-	
-	// EN EL DIAGRAMA DE CLASES YA NO HAY RELACION DIRECTA ENTRE DUMPSTER Y RECPLANT --> esto hace falta?
-	// lo he puesto por la lista de dumpsters que habia antes como atributo
-	// One-to-many relationship with Dumpster entity
-//    @OneToMany(mappedBy = "recyclingPlant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-//    private List<Dumpster> dumpsters = new ArrayList<>();
-	
-	// Creo que no hace falta porque para el mappedBy, no hay attributo recyclingPlant en Dumpster
 	
 	// One-to-many relationship with Allocation entity
 	@OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Allocation> allocations = new ArrayList<>();
-	
-	
-	//private String plant_id;
-	//private String plant_name;
-	//private float total_capacity;
-	//private float current_capacity;
-	//private List<Dumpster> dumpsters = new ArrayList<>(); --> estaba mal creo, no tiene que estar
-	//private List<Allocation> allocations;
-
 	
 	public RecyclingPlant() {
 	}
@@ -59,16 +40,11 @@ public class RecyclingPlant {
 		super();
 		this.name = plant_name;
 		this.total_capacity = total_capacity;
-		this.current_capacity = 0;
 	}
 
 	public Long getPlant_id() {
 		return plant_id;
 	}
-
-//	public void setPlant_id(String plant_id) {
-//		this.plant_id = plant_id;
-//	}
 
 	public String getPlant_name() {
 		return name;
@@ -85,23 +61,7 @@ public class RecyclingPlant {
 	public void setTotal_capacity(float total_capacity) {
 		this.total_capacity = total_capacity;
 	}
-	
-//	public List<Dumpster> getDumpsters() {
-//		return dumpsters;
-//	}
-	
-//	public void setDumpsters(List<Dumpster> dumpsters) {
-//		this.dumpsters = dumpsters;
-//	}
-	
-	public float getCurrent_capacity() {
-		return current_capacity;
-	}
-	
-	public void setCurrent_capacity(float current_capacity) {
-		this.current_capacity = current_capacity;
-	}
-	
+
 	public List<Allocation> getAllocations() {
 		return allocations;
 	}
@@ -111,7 +71,7 @@ public class RecyclingPlant {
 
 	@Override
 	public int hashCode() { // Quitado dumpsters
-		return Objects.hash(allocations, current_capacity, plant_id, name, total_capacity);
+		return Objects.hash(allocations, plant_id, name, total_capacity);
 	}
 
 	@Override
@@ -124,11 +84,10 @@ public class RecyclingPlant {
 			return false;
 		RecyclingPlant other = (RecyclingPlant) obj;
 		return Objects.equals(allocations, other.allocations)
-				&& Float.floatToIntBits(current_capacity) == Float.floatToIntBits(other.current_capacity)
 				&& Objects.equals(plant_id, other.plant_id)
 				&& Objects.equals(name, other.name)
 				&& Float.floatToIntBits(total_capacity) == Float.floatToIntBits(other.total_capacity);
-	} // Quitado && Objects.equals(dumpsters, other.dumpsters) &&
+	}
 	
 	
 }

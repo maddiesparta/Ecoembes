@@ -1,15 +1,20 @@
 package ecoembes.facade;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ecoembes.dao.EmployeeRepository;
 import ecoembes.dto.CredentialsDTO;
+import ecoembes.entity.Employee;
 import ecoembes.service.AuthService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +24,8 @@ import io.swagger.v3.oas.annotations.Operation;
 @RequestMapping("/auth")
 public class AuthController {
 	private AuthService authService;
+	private EmployeeRepository employeeRepository;
+	
 	public AuthController(AuthService authService) {
 		this.authService = authService;
 	}
@@ -66,5 +73,14 @@ public class AuthController {
         } else {
         	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }        
+    }
+    
+    @GetMapping("/debug/employees")
+    public ResponseEntity<List<String>> getEmployees() {
+        List<Employee> employees = employeeRepository.findAll();
+        List<String> emails = employees.stream()
+            .map(e -> e.getEmail() + " (name: " + e.getEmployee_name() + ")")
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(emails);
     }
 }

@@ -6,20 +6,18 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.time.LocalDate;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import ecoembes.dto.RecyclingPlantDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class ContSocketGateway implements IGateway {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger log = LoggerFactory.getLogger(ContSocketGateway.class);
+    
     @Value("${contsocket.host}")
     private String serverIP;
 
@@ -30,43 +28,35 @@ public class ContSocketGateway implements IGateway {
     }
 
     @Override
-    public float getCapacity(LocalDate date) {
-        System.out.println("   - Checking ContSocket dumpster capacity for date: " + date);
-
-        try {
-        	
-            String requestMessage = createCapacityRequest(date.toString());
-            System.out.println(" requestMessage " );
-            String jsonResponse = sendRequestAndGetResponse(requestMessage);
-            System.out.println(" jsonResponse " );
-            RecyclingPlantDTO plantDTO = objectMapper.readValue(jsonResponse, RecyclingPlantDTO.class);
-            System.out.println(" plantDTO " );
-            return receiveResponse(plantDTO, date.toString());
-            
-
-        } catch (Exception e) {
-            System.err.println("# ContSocketGateway: Error - " + e.getMessage());
-            return -1;
-        }
+    public float getCapacity() {
+       try {
+	    	String request = "GET_CAPACITY"; 
+	        String response = sendRequestAndGetResponse(request);
+	
+	        return Float.parseFloat(response.trim());
+       }catch(NumberFormatException e) {
+    	   log.error("Error parsing capacity response: {}", e.getMessage());
+           return -1;
+       }
     }
 
-    private String createCapacityRequest(String date) throws Exception {
-        java.util.Map<String, String> request = new java.util.HashMap<>();
-        request.put("action", "GET_CAPACITY");
-        request.put("date", date);
-        request.put("plant", "ContSocket");
-        return objectMapper.writeValueAsString(request);
+    @Override
+    public void updateCapacity(float amount) {
+        String request = "UPDATE_CAPACITY:" + amount;
+        sendRequestAndGetResponse(request);
     }
 
     private String sendRequestAndGetResponse(String requestData) {
         try (
-            Socket tcpSocket = new Socket(serverIP, serverPort);
-            DataInputStream in = new DataInputStream(tcpSocket.getInputStream());
-            DataOutputStream out = new DataOutputStream(tcpSocket.getOutputStream())
-        ) {
-            out.writeUTF(requestData);
-            System.out.println(" - ContSocketGateway: Sent request -> '" + requestData + "'");
-            return in.readUTF();
+        		Socket tcpSocket = new Socket(serverIP, serverPort);
+                DataInputStream in = new DataInputStream(tcpSocket.getInputStream());
+                DataOutputStream out = new DataOutputStream(tcpSocket.getOutputStream())
+            ) {
+                out.writeUTF(requestData);
+                log.debug("ContSocketGateway sent: '{}'", requestData);
+                String response = in.readUTF(); 
+                log.debug("ContSocketGateway received: '{}'", response);
+                return response;
 
         } catch (UnknownHostException e) {
             throw new RuntimeException("Socket error: " + e.getMessage(), e);
@@ -77,9 +67,4 @@ public class ContSocketGateway implements IGateway {
         }
     }
 
-    private float receiveResponse(RecyclingPlantDTO plantDTO, String requestedDate) {
-        if (plantDTO == null) return -1;
-
-        return plantDTO.getCurrent_capacity();
-    }
 }

@@ -3,6 +3,7 @@ package ecoembes.facade;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,9 @@ import ecoembes.dto.DumpsterDTO;
 import ecoembes.dto.RecyclingPlantDTO;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.Employee;
+import ecoembes.entity.LogInType;
 import ecoembes.entity.RecyclingPlant;
+import ecoembes.factory.GatewayFactory;
 import ecoembes.service.AuthService;
 import ecoembes.service.DumpsterService;
 import ecoembes.service.EcoembesService;
@@ -30,12 +33,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @RequestMapping("/ecoembes")
 public class EcoembesController {
 
+    private final GatewayFactory gatewayFactory;
+
 	private final EcoembesService ecoembesService;
 	private final DumpsterService dumpsterService;
 	
-	public EcoembesController(EcoembesService ecoembesService, DumpsterService dumpsterService) {
+	public EcoembesController(EcoembesService ecoembesService, DumpsterService dumpsterService, GatewayFactory gatewayFactory) {
 		this.ecoembesService = ecoembesService;
 		this.dumpsterService = dumpsterService;
+		this.gatewayFactory = gatewayFactory;
 	}
 	
 	
@@ -78,7 +84,8 @@ public class EcoembesController {
 			if (plant == null) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			if(plant.getTotal_capacity() < plant.getCurrent_capacity() + dumpster.getCapacity()) {
+			LogInType p = LogInType.valueOf(plant.getPlant_name().toUpperCase());
+			if(plant.getTotal_capacity() < gatewayFactory.createGateway(p).getCapacity() + dumpster.getEstimated_weight()) { 
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}else {
 				ecoembesService.createAllocation(dumpster, plant, employee);
@@ -157,7 +164,7 @@ public class EcoembesController {
 					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 				}
 				List<RecyclingPlantDTO> plantsDTOs = plants.stream().map(plant -> 
-				new RecyclingPlantDTO(plant.getPlant_name(), plant.getCurrent_capacity(),plant.getTotal_capacity())).collect(Collectors.toList());
+				new RecyclingPlantDTO(plant.getPlant_name(), gatewayFactory.createGateway(LogInType.valueOf(plant.getPlant_name().toUpperCase())).getCapacity(),plant.getTotal_capacity())).collect(Collectors.toList());
 				return new ResponseEntity<>(plantsDTOs, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -165,10 +172,45 @@ public class EcoembesController {
 		}
 	//Converts RecyclingPlant to RecyclingPlantDTO
 	private RecyclingPlantDTO plantToDTO(RecyclingPlant plant) {
+		LogInType p = LogInType.valueOf(plant.getPlant_name().toUpperCase());
 		return new RecyclingPlantDTO(
 				plant.getPlant_name(),
-				plant.getCurrent_capacity(),
+				gatewayFactory.createGateway(p).getCapacity(),
 				plant.getTotal_capacity()
 		);
 	}
+	
+	
+	//Gets external plants capacity(current)
+	@Operation(
+			summary = "Get plant capacity",
+			description = "Gets an external plants current capacity from the external servers.",
+			responses = {
+					@ApiResponse(responseCode = "200", description = "OK: Successfully retrieved the list of plants"),
+					@ApiResponse(responseCode = "204", description = "No Content: No plants found"),
+					@ApiResponse(responseCode = "500", description = "Internal Server error")
+			}
+		)
+	@GetMapping("/plants/{plant_name}/current_capacity")
+	public ResponseEntity<Float> getPlantCapacity(
+			@ValidatedParameter
+			@Parameter(name="plant_name",description = "Name of the plant",required=true,example="PlasSB") 
+			@PathVariable ("plant_name") String plant_name,
+			@RequestHeader("Authorization") String authHeader){
+		try {
+			if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+			String token = authHeader.substring(7); //Quitar el Bearer del token
+			Employee employee = AuthService.validateToken(token);
+			if(employee == null) {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+			float plant = ecoembesService.getPlantCapacity(plant_name);
+			return new ResponseEntity<Float>(plant, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 }

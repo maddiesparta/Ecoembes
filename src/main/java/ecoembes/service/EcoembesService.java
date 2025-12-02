@@ -10,66 +10,56 @@ import ecoembes.dao.RecyclingPlantRepository;
 import ecoembes.entity.Allocation;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.Employee;
+import ecoembes.entity.LogInType;
 import ecoembes.entity.RecyclingPlant;
+import ecoembes.factory.GatewayFactory;
 
 
 @Service
 public class EcoembesService {
 	
-	//private static Map<String, RecyclingPlant> plantRespository = new HashMap<>();
 	private final RecyclingPlantRepository recyclingPlantRepository;
 	
-	//private static Map<String, Allocation> allocationRepository = new HashMap<>();
 	private final AllocationRepository allocationRepository;
 	
-	public EcoembesService(RecyclingPlantRepository recyclingPlantRepository, AllocationRepository allocationRepository) {
+	private final GatewayFactory gatewayFactory;
+	
+	public EcoembesService(RecyclingPlantRepository recyclingPlantRepository, AllocationRepository allocationRepository, GatewayFactory gatewayFactory) {
     	this.recyclingPlantRepository = recyclingPlantRepository;
     	this.allocationRepository = allocationRepository;
+		this.gatewayFactory = gatewayFactory;
     }
 	
-	//Get all plants NEW
+	//Get all plants 
 	public List<RecyclingPlant> getAllPlants() {
 		return recyclingPlantRepository.findAll();
 	}
-	
-	//Get recycling plant by id OLD
-//	public RecyclingPlant getRecyclingPlantById(String plant_id) {
-//		return recyclingPlantRepository.get(plant_id);
-//	}
-	
-	//Get recycling plant by id NEW
+
+	//Get recycling plant by id 
 	public RecyclingPlant getRecyclingPlantById(long plant_id) {
 		Optional<RecyclingPlant> plant = recyclingPlantRepository.findById(plant_id);
 		
 		return plant.isPresent() ? plant.get() : null;
 	}
 	
-	//Add new recycling plant
-//	public void addRecyclingPlant(RecyclingPlant plant) {
-//		if(recyclingPlantRepository.get(String.valueOf(plant.getPlant_id())) != null) {
-//			throw new IllegalArgumentException("Recycling plant with id " + plant.getPlant_id() + " already exists.");
-//		}
-//		recyclingPlantRepository.put(String.valueOf(plant.getPlant_id()), plant);
-//	}
+	public float getPlantCapacity(String plant_name) {
+		LogInType p = LogInType.valueOf(plant_name.toUpperCase());
+		return gatewayFactory.createGateway(p).getCapacity();
+	}
 	
 	//Assign dumpster to plant
 	public void createAllocation(Dumpster dumpster, RecyclingPlant plant,Employee employee) {
-		if(plant.getCurrent_capacity() + dumpster.getCapacity() > plant.getTotal_capacity()) {
+		if(getPlantCapacity(plant.getPlant_name()) + dumpster.getCapacity() > plant.getTotal_capacity()) {
 			throw new IllegalArgumentException("Cannot allocate dumpster: plant capacity exceeded.");
 		}else {
-			plant.setCurrent_capacity(plant.getCurrent_capacity() + dumpster.getCapacity());
+			LogInType p = LogInType.valueOf(plant.getPlant_name().toUpperCase());
+			gatewayFactory.createGateway(p).updateCapacity(dumpster.getEstimated_weight());
 			Allocation allocation = new Allocation();
 			allocation.setDumpster(dumpster);
 			allocation.setPlant(plant);
 			allocation.setEmployee(employee);
-			//allocationRepository.put(String.valueOf(allocation.getAllocation_id()), allocation);
-			allocationRepository.save(allocation); // Con esto debería funcionar --> REPASAR
+			allocationRepository.save(allocation);
 		}
 	}
-	//Get all plants OLD
-//	public List<RecyclingPlant> getAllPlants() {
-//		return recyclingPlantRepository.values().stream().toList();
-//	}
-	
 	
 }

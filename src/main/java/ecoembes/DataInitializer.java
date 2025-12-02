@@ -36,8 +36,11 @@ public class DataInitializer {
 	    return args -> {
 
 	        if (dumpsterRepository.count() > 0) {
+	        	 logger.info(" Data already exists. Skipping initialization.");
+	             logger.info(" Employees in DB: {}", employeeRepository.count());
 	            return;
 	        }
+	        logger.info(" Starting data initialization...");
 
 	        // 1. Employees
 	        Employee e0 = new Employee("user", "user@gmail.com", "user");
@@ -58,8 +61,8 @@ public class DataInitializer {
 	        logger.info("Dumpsters saved!");
 
 	        // 3. Recycling plants
-	        RecyclingPlant rp1 = new RecyclingPlant("PlasSB Ltd", 100000);
-	        RecyclingPlant rp2 = new RecyclingPlant("Cont Socket Ltd", 150000);
+	        RecyclingPlant rp1 = new RecyclingPlant("PlasSB", 100000);
+	        RecyclingPlant rp2 = new RecyclingPlant("Cont Socket", 150000);
 	        recyclingPlantRepository.saveAll(List.of(rp1, rp2));
 	        logger.info("Recycling Plants saved!");
 

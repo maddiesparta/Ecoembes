@@ -21,14 +21,14 @@ public class EcoembesApplication {
     CommandLineRunner testGateway(PlasSBGateway gateway) {
         return args -> {
             System.out.println("Testing PlasSBGateway...");
-            System.out.println(gateway.getCapacity(LocalDate.now()));
+            System.out.println(gateway.getCapacity());
         };
     }
 	@Bean
     CommandLineRunner testGatewayCont(ContSocketGateway gateway) {
         return args -> {
             System.out.println("Testing ContSocketGateway...");
-            System.out.println(gateway.getCapacity(LocalDate.now()));
+            System.out.println(gateway.getCapacity());
         };
     }
 

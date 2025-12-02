@@ -1,8 +1,7 @@
 package ecoembes.gateway;
 
-import java.time.LocalDate;
-
 public interface IGateway {
 	
-	float getCapacity(LocalDate date);
+	float getCapacity();
+	void updateCapacity(float amount);
 }

@@ -35,12 +35,6 @@ public class Employee {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Allocation> allocations = new ArrayList<>();
 	
-	//private String employee_id;
-	//private String employee_name;
-	//private String email;
-	//private String password;
-	//private List<Allocation> allocations;
-	
 	public Employee() {
 	}
 	

@@ -9,18 +9,11 @@ import java.net.UnknownHostException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ecoembes.config.AppConfig;
-import ecoembes.dto.NotificationDTO;
-import ecoembes.service.EcoembesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
 public class ContSocketGateway implements IGateway {
-
-    private final AppConfig appConfig;
-
-    private final EcoembesService ecoembesService;
 
     private static final Logger log = LoggerFactory.getLogger(ContSocketGateway.class);
     
@@ -29,11 +22,6 @@ public class ContSocketGateway implements IGateway {
 
     @Value("${contsocket.port}")
     private int serverPort;
-
-    public ContSocketGateway(EcoembesService ecoembesService, AppConfig appConfig) {
-        this.ecoembesService = ecoembesService;
-        this.appConfig = appConfig;
-    }
 
     @Override
     public float getCapacity() {

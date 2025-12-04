@@ -1,6 +1,5 @@
 package ecoembes.service;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +57,6 @@ public class EcoembesService {
 		if(getPlantCapacity(plant.getPlant_name()) + dumpster.getCapacity() > plant.getTotal_capacity()) {
 			throw new IllegalArgumentException("Cannot allocate dumpster: plant capacity exceeded.");
 		}else {
-			LogInType p = LogInType.valueOf(plant.getPlant_name().toUpperCase());
 			Allocation allocation = new Allocation();
 			allocation.setDumpster(dumpster);
 			allocation.setPlant(plant);

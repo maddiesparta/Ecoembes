@@ -5,7 +5,7 @@ public class NotificationDTO {
 	private int packages;
 	private float tons;
 
-	public NotificationDTO(int dumpsters2, int packages2, float tons2) {
+	public NotificationDTO(int dumpsters, int packages, float tons) {
 		this.dumpsters = dumpsters;
 		this.packages = packages;
 		this.tons = tons;

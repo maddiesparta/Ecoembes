@@ -9,12 +9,18 @@ import java.net.UnknownHostException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import ecoembes.config.AppConfig;
+import ecoembes.dto.NotificationDTO;
+import ecoembes.service.EcoembesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
 public class ContSocketGateway implements IGateway {
+
+    private final AppConfig appConfig;
+
+    private final EcoembesService ecoembesService;
 
     private static final Logger log = LoggerFactory.getLogger(ContSocketGateway.class);
     
@@ -24,7 +30,9 @@ public class ContSocketGateway implements IGateway {
     @Value("${contsocket.port}")
     private int serverPort;
 
-    public ContSocketGateway() {
+    public ContSocketGateway(EcoembesService ecoembesService, AppConfig appConfig) {
+        this.ecoembesService = ecoembesService;
+        this.appConfig = appConfig;
     }
 
     @Override
@@ -38,12 +46,6 @@ public class ContSocketGateway implements IGateway {
     	   log.error("Error parsing capacity response: {}", e.getMessage());
            return -1;
        }
-    }
-
-    @Override
-    public void updateCapacity(float amount) {
-        String request = "UPDATE_CAPACITY:" + amount;
-        sendRequestAndGetResponse(request);
     }
 
     private String sendRequestAndGetResponse(String requestData) {
@@ -66,5 +68,23 @@ public class ContSocketGateway implements IGateway {
             throw new RuntimeException("IO error: " + e.getMessage(), e);
         }
     }
+
+	@Override
+	public void sendNotification(int dumpsters, int packages, float tons) {
+		try {
+	        String response = sendRequestAndGetResponse("SEND_NOTIFICATION:"+String.valueOf(dumpsters)+":"+String.valueOf(packages)+":"+ String.valueOf(tons));
+	        if(response.equals("OK")) {
+	        	System.out.println("(ContSocket info sending) Everything went OK");
+	        }else {
+	        	System.out.println("(ContSocket info sending) Not everything went OK :(");
+	        }
+	        
+       }catch(NumberFormatException e) {
+    	   log.error("Error parsing capacity response: {}", e.getMessage());
+
+       }
+		
+	}
+
 
 }

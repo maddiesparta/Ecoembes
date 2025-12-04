@@ -1,5 +1,6 @@
 package ecoembes.service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,19 +48,51 @@ public class EcoembesService {
 		return gatewayFactory.createGateway(p).getCapacity();
 	}
 	
+	public void sendNotification(String plant_name, int dumpsters, int packages, float tons) {
+		LogInType p = LogInType.valueOf(plant_name.toUpperCase());
+		gatewayFactory.createGateway(p).sendNotification(dumpsters, packages, tons);
+	}
+	
 	//Assign dumpster to plant
 	public void createAllocation(Dumpster dumpster, RecyclingPlant plant,Employee employee) {
 		if(getPlantCapacity(plant.getPlant_name()) + dumpster.getCapacity() > plant.getTotal_capacity()) {
 			throw new IllegalArgumentException("Cannot allocate dumpster: plant capacity exceeded.");
 		}else {
 			LogInType p = LogInType.valueOf(plant.getPlant_name().toUpperCase());
-			gatewayFactory.createGateway(p).updateCapacity(dumpster.getEstimated_weight());
 			Allocation allocation = new Allocation();
 			allocation.setDumpster(dumpster);
 			allocation.setPlant(plant);
 			allocation.setEmployee(employee);
 			allocationRepository.save(allocation);
+			
 		}
+	}
+	public void createAssignment(List<Dumpster> ds, RecyclingPlant rp, Employee e) {
+		int dumpsters = 0;
+		int packages = 0;
+		float tons = 0;
+		boolean ballocated = false;
+		List<Allocation> allocated = allocationRepository.findAll();
+		for (Dumpster dumpster : ds) {
+			for (Allocation allocation : allocated) {
+				if(allocation.getDumpster().getDumpster_id() == dumpster.getDumpster_id()) {
+					ballocated = true;
+				}
+			}
+		}
+		for (Dumpster dumpster : ds) {
+			dumpsters++;
+			packages = dumpster.getContainer_number()+packages;
+			tons = dumpster.getEstimated_weight()+tons;
+		}
+		if(tons<=getPlantCapacity(rp.getPlant_name()) && !ballocated) {
+			for (Dumpster dumpster : ds) {
+				createAllocation(dumpster, rp, e);
+			}
+		}else {
+			System.err.println("Assignment exceeds plant's capacity or some of the dumpsters is already allocated");
+		}
+		sendNotification(rp.getPlant_name(),dumpsters, packages, tons);
 	}
 	
 }

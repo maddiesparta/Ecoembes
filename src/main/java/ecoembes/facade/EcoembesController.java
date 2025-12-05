@@ -151,7 +151,7 @@ public class EcoembesController {
 				if(authHeader == null || !authHeader.startsWith("Bearer ")) {
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 				}
-				String token = authHeader.substring(7); //Quitar el Bearer del token
+				String token = authHeader.substring(7); 
 				Employee employee = AuthService.validateToken(token);
 				if(employee == null) {
 					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -159,14 +159,17 @@ public class EcoembesController {
 				List<RecyclingPlant> plants = ecoembesService.getAllPlants();
 				if (plants.isEmpty()) {
 					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+				} else {
+					List<RecyclingPlantDTO> plantDTOs = plants.stream()
+							.map(this::plantToDTO)
+							.collect(Collectors.toList());
+					return new ResponseEntity<>(plantDTOs, HttpStatus.OK);
 				}
-				List<RecyclingPlantDTO> plantsDTOs = plants.stream().map(plant -> 
-				new RecyclingPlantDTO(plant.getPlant_name(), gatewayFactory.createGateway(LogInType.valueOf(plant.getPlant_name().toUpperCase())).getCapacity(),plant.getTotal_capacity())).collect(Collectors.toList());
-				return new ResponseEntity<>(plantsDTOs, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
+		
 	//Converts RecyclingPlant to RecyclingPlantDTO
 	private RecyclingPlantDTO plantToDTO(RecyclingPlant plant) {
 		LogInType p = LogInType.valueOf(plant.getPlant_name().toUpperCase());

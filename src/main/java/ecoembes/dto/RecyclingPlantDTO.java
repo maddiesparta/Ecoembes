@@ -11,7 +11,6 @@ public class RecyclingPlantDTO {
 	public RecyclingPlantDTO(String plant_name, float current_capacity,float total_capacity) {
 		super();
 		this.plant_name = plant_name;
-		this.current_capacity = current_capacity;
 		this.total_capacity = total_capacity;
 	}
 

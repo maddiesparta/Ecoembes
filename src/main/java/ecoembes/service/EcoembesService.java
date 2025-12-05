@@ -65,32 +65,34 @@ public class EcoembesService {
 			
 		}
 	}
-	public void createAssignment(List<Dumpster> ds, RecyclingPlant rp, Employee e) {
+	public boolean checkDumpsterAllocation(Dumpster dumpster) {
+		List<Allocation> allocated = allocationRepository.findAll();
+		for (Allocation allocation : allocated) {
+			if(allocation.getDumpster().getDumpster_id() == dumpster.getDumpster_id()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public boolean createAssignment(List<Dumpster> ds, RecyclingPlant rp, Employee e) {
 		int dumpsters = 0;
 		int packages = 0;
 		float tons = 0;
-		boolean ballocated = false;
-		List<Allocation> allocated = allocationRepository.findAll();
-		for (Dumpster dumpster : ds) {
-			for (Allocation allocation : allocated) {
-				if(allocation.getDumpster().getDumpster_id() == dumpster.getDumpster_id()) {
-					ballocated = true;
-				}
-			}
-		}
 		for (Dumpster dumpster : ds) {
 			dumpsters++;
 			packages = dumpster.getContainer_number()+packages;
 			tons = dumpster.getEstimated_weight()+tons;
 		}
-		if(tons<=getPlantCapacity(rp.getPlant_name()) && !ballocated) {
+		if(tons<=getPlantCapacity(rp.getPlant_name())) {
 			for (Dumpster dumpster : ds) {
 				createAllocation(dumpster, rp, e);
 			}
+			sendNotification(rp.getPlant_name(),dumpsters, packages, tons);
+			return true;
 		}else {
-			System.err.println("Assignment exceeds plant's capacity or some of the dumpsters is already allocated");
+			return false;
 		}
-		sendNotification(rp.getPlant_name(),dumpsters, packages, tons);
+		
 	}
 	
 }

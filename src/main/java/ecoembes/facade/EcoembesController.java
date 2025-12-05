@@ -59,12 +59,12 @@ public class EcoembesController {
 		}
 	)
 	@PostMapping("/plants/{plant_id}/assign")
-	public ResponseEntity<Void> assignDumpsterToPlant(
+	public ResponseEntity<Void> assignDumpstersToPlant(
 			@ValidatedParameter
-			@Parameter(name="plant_id",description = "ID of the plant",required=true,example="p1") 
+			@Parameter(name="plant_id",description = "ID of the plant",required=true,example="1") 
 			@PathVariable ("plant_id") long plant_id,
 			@ValidatedParameter
-			@Parameter(name = "dumpster_ids", description = "List of Dumpster IDs", required = true, example = "[1,2,3]")
+			@Parameter(name = "dumpster_ids", description = "List of Dumpster IDs", required = true, example = "[4,5,6]")
 			@RequestParam ("dumpster_ids") List<Long> dumpster_ids,
 			@RequestHeader("Authorization") String authHeader){
 		try {
@@ -162,7 +162,7 @@ public class EcoembesController {
 					@ApiResponse(responseCode = "500", description = "Internal Server error")
 			}
 		)
-	@GetMapping("/plants/{plant_name}/current_capacity")
+	@GetMapping("/plants/{plant_name}/capacity/current_capacity")
 	public ResponseEntity<Float> getPlantCapacity(
 			@ValidatedParameter
 			@Parameter(name="plant_name",description = "Name of the plant",required=true,example="PlasSB") 

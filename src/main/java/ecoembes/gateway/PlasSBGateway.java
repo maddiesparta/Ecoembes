@@ -27,7 +27,7 @@ public class PlasSBGateway implements IGateway {
     @Override
     public float getCapacity() {
         try {
-            String url = serverURL + "/api/plants/capacity/current?plant_name="+plantName;
+        	String url = serverURL + "/api/plants/capacity/current?plant_name=" + plantName;
             Float capacity = restTemplate.getForObject(url, Float.class);
             return capacity;
             
@@ -41,7 +41,7 @@ public class PlasSBGateway implements IGateway {
 	public void sendNotification(int dumpsters, int packages, float tons) {
 		//Sends notification in the form of a POST request to PlasSB server
 		try {
-			String url = serverURL + "/api/plants/allocation?plant_name="+plantName;
+			String url = serverURL + "/api/plants/allocation?plant_name=" + plantName;
 			restTemplate.postForObject(url, new NotificationDTO(dumpsters, packages, tons), Void.class);
 		} catch (Exception e) {
 			log.error("Error sending notification to PlasSB: {}", e.getMessage());

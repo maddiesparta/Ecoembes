@@ -54,16 +54,12 @@ public class EcoembesService {
 	
 	//Assign dumpster to plant
 	public void createAllocation(Dumpster dumpster, RecyclingPlant plant,Employee employee) {
-		if(getPlantCapacity(plant.getPlant_name()) + dumpster.getCapacity() > plant.getTotal_capacity()) {
-			throw new IllegalArgumentException("Cannot allocate dumpster: plant capacity exceeded.");
-		}else {
-			Allocation allocation = new Allocation();
-			allocation.setDumpster(dumpster);
-			allocation.setPlant(plant);
-			allocation.setEmployee(employee);
-			allocationRepository.save(allocation);
-			
-		}
+		Allocation allocation = new Allocation();
+		allocation.setDumpster(dumpster);
+		allocation.setPlant(plant);
+		allocation.setEmployee(employee);
+		allocationRepository.save(allocation);
+
 	}
 	public boolean checkDumpsterAllocation(Dumpster dumpster) {
 		List<Allocation> allocated = allocationRepository.findAll();

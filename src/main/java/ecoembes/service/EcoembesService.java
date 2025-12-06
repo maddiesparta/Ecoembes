@@ -20,6 +20,7 @@ public class EcoembesService {
 	
 	private final RecyclingPlantRepository recyclingPlantRepository;
 	
+	
 	private final AllocationRepository allocationRepository;
 	
 	private final GatewayFactory gatewayFactory;
@@ -33,6 +34,7 @@ public class EcoembesService {
 	//Get all plants 
 	public List<RecyclingPlant> getAllPlants() {
 		return recyclingPlantRepository.findAll();
+		
 	}
 
 	//Get recycling plant by id 
@@ -42,13 +44,19 @@ public class EcoembesService {
 		return plant.isPresent() ? plant.get() : null;
 	}
 	
+	public LogInType getLogInTypeByPlantName(String plant_name) {
+	    if (plant_name.toUpperCase().startsWith("PLASSB")) return LogInType.PLASSB;
+	    if (plant_name.toUpperCase().startsWith("CONT")) return LogInType.CONTSOCKET;
+	    throw new IllegalArgumentException("Unknown plant name: " + plant_name);
+	}
+	
 	public float getPlantCapacity(String plant_name) {
-		LogInType p = LogInType.valueOf(plant_name.toUpperCase());
+		LogInType p = getLogInTypeByPlantName(plant_name);
 		return gatewayFactory.createGateway(p).getCapacity();
 	}
 	
 	public void sendNotification(String plant_name, int dumpsters, int packages, float tons) {
-		LogInType p = LogInType.valueOf(plant_name.toUpperCase());
+		LogInType p = getLogInTypeByPlantName(plant_name);
 		gatewayFactory.createGateway(p).sendNotification(dumpsters, packages, tons);
 	}
 	
@@ -89,6 +97,11 @@ public class EcoembesService {
 			return false;
 		}
 		
+	}
+
+	public List<Allocation> getAllAllocations() {
+		List<Allocation> a = allocationRepository.findAll();
+		return a;
 	}
 	
 }

@@ -110,6 +110,11 @@ public class Allocation {
 				&& Objects.equals(dumpster, other.dumpster) && Objects.equals(employee, other.employee)
 				&& Objects.equals(plant, other.plant);
 	}
+	@Override
+	public String toString() {
+		return "Allocation [allocation_id=" + allocation_id + ", date=" + date + ", dumpster=" + dumpster + ", plant="
+				+ plant + ", employee=" + employee + "]";
+	}
 	
 	
 }

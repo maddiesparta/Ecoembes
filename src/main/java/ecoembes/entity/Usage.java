@@ -21,8 +21,6 @@ public class Usage {
 	@ManyToOne(optional = false)
 	private Dumpster dumpster;
 	
-	@Column(nullable = false, unique = true)
-    private String postal_code;
 	
 	@Column(nullable = false)
 	private LocalDate date;
@@ -49,12 +47,7 @@ public class Usage {
 	public void setDumpster(Dumpster dumpster) {
 		this.dumpster = dumpster;
 	}
-	public String getPostal_code() {
-		return postal_code;
-	}
-	public void setPostal_code(String postal_code) {
-		this.postal_code = postal_code;
-	}
+
 	public LocalDate getDate() {
 		return date;
 	}
@@ -69,7 +62,7 @@ public class Usage {
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(date, dumpster, fill_level, postal_code, usage_id);
+		return Objects.hash(date, dumpster, fill_level, usage_id);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -81,7 +74,7 @@ public class Usage {
 			return false;
 		Usage other = (Usage) obj;
 		return Objects.equals(date, other.date) && Objects.equals(dumpster, other.dumpster)
-				&& fill_level == other.fill_level && Objects.equals(postal_code, other.postal_code)
+				&& fill_level == other.fill_level 
 				&& Objects.equals(usage_id, other.usage_id);
 	}
 	

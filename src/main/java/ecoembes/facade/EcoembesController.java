@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ecoembes.dto.AllocationDTO;
+import ecoembes.dto.DumpsterDTO;
 import ecoembes.dto.RecyclingPlantDTO;
+import ecoembes.entity.Allocation;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.Employee;
 import ecoembes.entity.LogInType;
@@ -42,7 +45,38 @@ public class EcoembesController {
 		this.dumpsterService = dumpsterService;
 		this.gatewayFactory = gatewayFactory;
 	}
-	
+	//view allocations
+	@Operation(
+	        summary = "Get all allocations",
+	        description = "Retrieve all dumpster allocations to recycling plants",
+	        responses={
+	            @ApiResponse(responseCode = "200", description = "OK: Successfully retrieved all allocations"),
+	            @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid or missing authentication token"),
+	            @ApiResponse(responseCode = "500", description = "Internal Server error")
+	        })
+	    @GetMapping("/allocations")
+	    public ResponseEntity<List<AllocationDTO>> getAllAllocations(
+	    		@RequestHeader("Authorization") String authHeader) {
+	        
+	        try {
+	        	if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+				String token = authHeader.substring(7); //Remove "Bearer " from token
+				Employee employee = AuthService.validateToken(token);
+				if(employee == null) {
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+	            
+	            List<Allocation> allocations = ecoembesService.getAllAllocations();
+	            List<AllocationDTO> allocationDTOs = allocations.stream()
+	            		.map(this::allocationToDTO)
+	            		.collect(Collectors.toList());
+	            return new ResponseEntity<>(allocationDTOs, HttpStatus.OK);
+	        } catch (Exception e) {
+	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    }
 	
 	
 	//POST to assign(allocate) a dumpster to a recycling plant
@@ -59,7 +93,7 @@ public class EcoembesController {
 		}
 	)
 	@PostMapping("/plants/{plant_id}/assign")
-	public ResponseEntity<Void> assignDumpstersToPlant(
+	public ResponseEntity<Void> assignDumpsterToPlant(
 			@ValidatedParameter
 			@Parameter(name="plant_id",description = "ID of the plant",required=true,example="1") 
 			@PathVariable ("plant_id") long plant_id,
@@ -88,17 +122,22 @@ public class EcoembesController {
 			if (plant == null) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
+			
 			for(Dumpster dumpster : dumpsters) {
 				if(ecoembesService.checkDumpsterAllocation(dumpster)) {
+					
 					return new ResponseEntity<>(HttpStatus.CONFLICT);	
 				}
+				
 			}
+			
 			if(ecoembesService.createAssignment(dumpsters, plant, employee) == false) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
+			e.printStackTrace(); 
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -150,6 +189,11 @@ public class EcoembesController {
 				plant.getTotal_capacity()
 		);
 	}
+	//Converts Allocation to AllocationDTO
+		private AllocationDTO allocationToDTO(Allocation allocation) {
+			
+			return new AllocationDTO(allocation);
+		}
 	
 	
 	//Gets external plants capacity(current)
@@ -162,7 +206,7 @@ public class EcoembesController {
 					@ApiResponse(responseCode = "500", description = "Internal Server error")
 			}
 		)
-	@GetMapping("/plants/{plant_name}/capacity/current_capacity")
+	@GetMapping("/plants/{plant_name}/current_capacity")
 	public ResponseEntity<Float> getPlantCapacity(
 			@ValidatedParameter
 			@Parameter(name="plant_name",description = "Name of the plant",required=true,example="PlasSB") 

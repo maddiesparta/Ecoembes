@@ -10,7 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import ecoembes.dao.AllocationRepository;
 import ecoembes.dao.DumpsterRepository;
 import ecoembes.dao.EmployeeRepository;
@@ -26,6 +26,7 @@ import ecoembes.entity.RecyclingPlant;
 
 @Configuration
 public class DataInitializer {
+	
 	private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
 	@Bean
@@ -57,7 +58,9 @@ public class DataInitializer {
 	        Dumpster d4 = new Dumpster("Calle Bidebarrieta 3", "444444", 40, 20);
 	        Dumpster d5 = new Dumpster("Calle Elcano 7", "555555", 35, 18);
 	        Dumpster d6 = new Dumpster("Calle Lersundi 10", "666666", 28, 12);
+	        d4.setEstimated_weight(8000000);
 	        dumpsterRepository.saveAll(List.of(d1, d2, d3, d4, d5, d6));
+	        
 	        logger.info("Dumpsters saved!");
 
 	        // 3. Recycling plants

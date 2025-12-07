@@ -58,7 +58,6 @@ public class DataInitializer {
 	        Dumpster d4 = new Dumpster("Calle Bidebarrieta 3", "444444", 40, 20);
 	        Dumpster d5 = new Dumpster("Calle Elcano 7", "555555", 35, 18);
 	        Dumpster d6 = new Dumpster("Calle Lersundi 10", "666666", 28, 12);
-	        d4.setEstimated_weight(8000000);
 	        dumpsterRepository.saveAll(List.of(d1, d2, d3, d4, d5, d6));
 	        
 	        logger.info("Dumpsters saved!");

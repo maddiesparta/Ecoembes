@@ -58,7 +58,7 @@ public class ContSocketGateway implements IGateway {
     }
 
 	@Override
-	public void sendNotification(int dumpsters, int packages, float tons) {
+	public void sendAssignmentNotification(int dumpsters, int packages, float tons) {
 		//Sends notfication in the format SEND_NOTIFICATION:<dumpsters>:<packages>:<tons>
 		try {
 	        String response = sendRequestAndGetResponse("SEND_NOTIFICATION:"+String.valueOf(dumpsters)+":"+String.valueOf(packages)+":"+ String.valueOf(tons));

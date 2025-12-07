@@ -3,5 +3,5 @@ package ecoembes.gateway;
 public interface IGateway {
 	
 	float getCapacity();
-	void sendNotification(int dumpsters, int packages, float tons);
+	void sendAssignmentNotification(int dumpsters, int packages, float tons);
 }

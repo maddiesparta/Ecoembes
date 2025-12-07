@@ -57,7 +57,8 @@ public class EcoembesService {
 	
 	public void sendNotification(String plant_name, int dumpsters, int packages, float tons) {
 		LogInType p = getLogInTypeByPlantName(plant_name);
-		gatewayFactory.createGateway(p).sendNotification(dumpsters, packages, tons);
+		System.out.println("Sending notification to" + plant_name);
+		gatewayFactory.createGateway(p).sendAssignmentNotification(dumpsters, packages, tons);
 	}
 	
 	//Assign dumpster to plant
@@ -79,11 +80,9 @@ public class EcoembesService {
 		return false;
 	}
 	public boolean createAssignment(List<Dumpster> ds, RecyclingPlant rp, Employee e) {
-		int dumpsters = 0;
 		int packages = 0;
 		float tons = 0;
 		for (Dumpster dumpster : ds) {
-			dumpsters++;
 			packages = dumpster.getContainer_number()+packages;
 			tons = dumpster.getEstimated_weight()+tons;
 		}
@@ -91,7 +90,7 @@ public class EcoembesService {
 			for (Dumpster dumpster : ds) {
 				createAllocation(dumpster, rp, e);
 			}
-			sendNotification(rp.getPlant_name(),dumpsters, packages, tons);
+			sendNotification(rp.getPlant_name(),ds.size(), packages, tons);
 			return true;
 		}else {
 			return false;

@@ -15,12 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ecoembes.dto.AllocationDTO;
-import ecoembes.dto.DumpsterDTO;
 import ecoembes.dto.RecyclingPlantDTO;
 import ecoembes.entity.Allocation;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.Employee;
-import ecoembes.entity.LogInType;
 import ecoembes.entity.RecyclingPlant;
 import ecoembes.factory.GatewayFactory;
 import ecoembes.service.AuthService;
@@ -170,9 +168,11 @@ public class EcoembesController {
 				if (plants.isEmpty()) {
 					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 				} else {
-					List<RecyclingPlantDTO> plantDTOs = plants.stream()
-							.map(this::plantToDTO)
-							.collect(Collectors.toList());
+					List<RecyclingPlantDTO> plantDTOs = new ArrayList<>();
+					for(RecyclingPlant plant : plants) {
+						RecyclingPlantDTO plantDTO = plantToDTO(plant);
+						plantDTOs.add(plantDTO);
+					}
 					return new ResponseEntity<>(plantDTOs, HttpStatus.OK);
 				}
 			} catch (Exception e) {
@@ -182,10 +182,10 @@ public class EcoembesController {
 		
 	//Converts RecyclingPlant to RecyclingPlantDTO
 	private RecyclingPlantDTO plantToDTO(RecyclingPlant plant) {
-		LogInType p = LogInType.valueOf(plant.getPlant_name().toUpperCase());
+		
 		return new RecyclingPlantDTO(
 				plant.getPlant_name(),
-				gatewayFactory.createGateway(p).getCapacity(),
+				ecoembesService.getPlantCapacity(plant.getPlant_name()),
 				plant.getTotal_capacity()
 		);
 	}

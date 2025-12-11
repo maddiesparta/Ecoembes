@@ -14,10 +14,10 @@ public class PlasSBGateway implements IGateway {
 	private static final Logger log = LoggerFactory.getLogger(PlasSBGateway.class);
     private final RestTemplate restTemplate;
     
-    @Value("${plassb.server.url:http://localhost:8081}")
+    @Value("${plassb.url}")
     private String serverURL;
     
-    @Value("${plassb.plant.name:PlasSB}")
+    @Value("${plassb.name}")
     private String plantName;
     
     public PlasSBGateway(RestTemplate restTemplate) {

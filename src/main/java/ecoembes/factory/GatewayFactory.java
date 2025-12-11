@@ -1,7 +1,6 @@
 package ecoembes.factory;
 
 import org.springframework.stereotype.Service;
-import ecoembes.entity.LogInType;
 import ecoembes.gateway.ContSocketGateway;
 import ecoembes.gateway.PlasSBGateway;
 import ecoembes.gateway.IGateway;
@@ -17,11 +16,16 @@ public class GatewayFactory {
         this.contSocketGateway = contSocketGateway;
     }
 
-    public IGateway createGateway(LogInType type) {
-        switch (type) {
-            case PLASSB:
+    public IGateway createGateway(String plant_name) {
+    	if(plant_name.contains("")) {
+    		plant_name = plant_name.replace(" ", "");
+    	}
+    	String upperPlantName = plant_name.toUpperCase();
+    	
+        switch (upperPlantName) {
+        	case "PLASSB":
                 return plasSBGateway;
-            case CONTSOCKET:
+            case "CONTSOCKET":
                 return contSocketGateway;
             default:
                 return null;

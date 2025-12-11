@@ -10,7 +10,6 @@ import ecoembes.dao.RecyclingPlantRepository;
 import ecoembes.entity.Allocation;
 import ecoembes.entity.Dumpster;
 import ecoembes.entity.Employee;
-import ecoembes.entity.LogInType;
 import ecoembes.entity.RecyclingPlant;
 import ecoembes.factory.GatewayFactory;
 
@@ -44,21 +43,14 @@ public class EcoembesService {
 		return plant.isPresent() ? plant.get() : null;
 	}
 	
-	public LogInType getLogInTypeByPlantName(String plant_name) {
-	    if (plant_name.toUpperCase().startsWith("PLASSB")) return LogInType.PLASSB;
-	    if (plant_name.toUpperCase().startsWith("CONT")) return LogInType.CONTSOCKET;
-	    throw new IllegalArgumentException("Unknown plant name: " + plant_name);
-	}
 	
 	public float getPlantCapacity(String plant_name) {
-		LogInType p = getLogInTypeByPlantName(plant_name);
-		return gatewayFactory.createGateway(p).getCapacity();
+		return gatewayFactory.createGateway(plant_name).getCapacity();
 	}
 	
 	public void sendNotification(String plant_name, int dumpsters, int packages, float tons) {
-		LogInType p = getLogInTypeByPlantName(plant_name);
 		System.out.println("Sending notification to" + plant_name);
-		gatewayFactory.createGateway(p).sendAssignmentNotification(dumpsters, packages, tons);
+		gatewayFactory.createGateway(plant_name).sendAssignmentNotification(dumpsters, packages, tons);
 	}
 	
 	//Assign dumpster to plant

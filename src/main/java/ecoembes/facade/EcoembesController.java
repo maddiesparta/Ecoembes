@@ -1,6 +1,7 @@
 package ecoembes.facade;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,7 +98,7 @@ public class EcoembesController {
 			@PathVariable ("plant_id") long plant_id,
 			@ValidatedParameter
 			@Parameter(name = "dumpster_ids", description = "List of Dumpster IDs", required = true, example = "[4,5,6]")
-			@RequestParam ("dumpster_ids") List<Long> dumpster_ids,
+			@RequestParam(name = "dumpster_ids") Long[] dumpster_ids,
 			@RequestHeader("Authorization") String authHeader){
 		try {
 			if(authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -109,7 +110,10 @@ public class EcoembesController {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
 			List<Dumpster> dumpsters = new ArrayList<Dumpster>();
-			for(Long dumpster_id : dumpster_ids) {
+			if (dumpster_ids == null) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			for(Long dumpster_id : Arrays.asList(dumpster_ids)) {
 				Dumpster dumpster = dumpsterService.getDumpsterById(dumpster_id);
 				dumpsters.add(dumpster);
 			}
@@ -184,6 +188,7 @@ public class EcoembesController {
 	private RecyclingPlantDTO plantToDTO(RecyclingPlant plant) {
 		
 		return new RecyclingPlantDTO(
+				plant.getPlant_id(),
 				plant.getPlant_name(),
 				ecoembesService.getPlantCapacity(plant.getPlant_name()),
 				plant.getTotal_capacity()

@@ -51,7 +51,7 @@ public class DumpsterService {
 			return dumpster.isPresent() ? dumpster.get() : null;
 		}
 		
-		//Update dumpster TODO !!!
+		//Update dumpster !!!
 		public void updateDumpster(Long dumpster_id, int container_number, FillLevel fill_level) {
 			Optional<Dumpster> dumpsterOp = dumpsterRepository.findById(dumpster_id);
 			
@@ -78,5 +78,17 @@ public class DumpsterService {
 	        }
 			List<UsageDTO> usageDTO = usage.stream().map(UsageDTO::new).toList();
 			return usageDTO;
+		}
+		
+		public Dumpster addDumpster(String location, String postal_code, int capacity, int container_number) {
+		    Dumpster dumpster = new Dumpster();
+		    dumpster.setLocation(location);
+		    dumpster.setPostal_code(postal_code);
+		    dumpster.setCapacity(capacity);
+		    dumpster.setContainer_number(container_number);
+		    dumpster.setFill_level(FillLevel.GREEN); 
+		    dumpster.setEstimated_weight(0);
+		    
+		    return dumpsterRepository.save(dumpster);
 		}
 }

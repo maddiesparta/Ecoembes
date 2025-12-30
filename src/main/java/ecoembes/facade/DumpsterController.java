@@ -69,9 +69,8 @@ public class DumpsterController {
 					return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 				}
 				List<DumpsterDTO> dumpsterDTOs = dumpsters.stream()
-						.map(dumpster -> new DumpsterDTO(dumpster.getDumpster_id(), dumpster.getLocation(), dumpster.getPostal_code(),
-								dumpster.getFill_level(), dumpster.getContainer_number()))
-						.collect(Collectors.toList());
+					    .map(this::dumpsterToDTO)
+					    .collect(Collectors.toList());
 				return new ResponseEntity<>(dumpsterDTOs, HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -205,8 +204,8 @@ public class DumpsterController {
 	            }
 	        
 	            Dumpster dumpster = new Dumpster(
-	            		postal_code,
 	            		location,
+	            		postal_code,
 	            		capacity, 
 	            		container_number
 	            );
@@ -274,14 +273,17 @@ public class DumpsterController {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
+		
+		
 		//Converts Dumpster to DumpsterDTO
 		private DumpsterDTO dumpsterToDTO(Dumpster dumpster) {
-		       return new DumpsterDTO(
-		           dumpster.getDumpster_id(),
-		           dumpster.getLocation(),
-		           dumpster.getPostal_code(),
-		           dumpster.getFill_level(),
-		           dumpster.getContainer_number()
-		       );
+			return new DumpsterDTO(
+			        dumpster.getDumpster_id(),
+			        dumpster.getLocation(),
+			        dumpster.getPostal_code(),
+			        dumpster.getFill_level(),
+			        dumpster.getContainer_number(),
+			        dumpster.getCapacity()
+			    );
 		}
 }

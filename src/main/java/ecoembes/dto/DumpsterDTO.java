@@ -9,6 +9,7 @@ public class DumpsterDTO {
 	private String postal_code;
 	private FillLevel fill_level; //GREEN, ORANGE, RED
 	private int container_number; //number of containers in the dumpster
+	private int capacity; 
 	
 	public DumpsterDTO() {
 	}
@@ -21,6 +22,19 @@ public class DumpsterDTO {
 		this.postal_code = postal_code;
 		this.fill_level = fill_level;
 		this.container_number = container_number;
+	}
+	
+	
+
+	public DumpsterDTO(Long dumpster_id, String location, String postal_code, FillLevel fill_level,
+			int container_number, int capacity) {
+		super();
+		this.dumpster_id = dumpster_id;
+		this.location = location;
+		this.postal_code = postal_code;
+		this.fill_level = fill_level;
+		this.container_number = container_number;
+		this.capacity = capacity;
 	}
 
 	public Long getDumpster_id() {
@@ -61,6 +75,14 @@ public class DumpsterDTO {
 
 	public void setContainer_number(int container_number) {
 		this.container_number = container_number;
+	}
+
+	public int getCapacity() {
+		return capacity;
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
 	}
 
 	
